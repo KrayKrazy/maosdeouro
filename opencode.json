@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "cakto-local": {
+      "type": "local",
+      "command": ["node", "mcp/cakto-server/dist/index.js"],
+      "enabled": true,
+      "environment": {
+        "CAKTO_CLIENT_ID": "{env:CAKTO_CLIENT_ID}",
+        "CAKTO_SECRET": "{env:CAKTO_SECRET}",
+        "CAKTO_BASE_URL": "{env:CAKTO_BASE_URL}"
+      }
+    }
+  }
+}

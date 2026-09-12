@@ -1,0 +1,143 @@
+// Mãos de Ouro — E-commerce peças grandes + sob medida
+// PostgreSQL via Prisma. Campos dimensionais obrigatórios para Frenet.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductType {
+  SHIPPABLE
+  CUSTOM_PROJECT
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  AWAITING_QUOTE
+  PAYMENT_CONFIRMED
+  AWAITING_SHIPMENT
+  SHIPPED
+  CANCELLED
+  REFUNDED
+}
+
+enum ShippingMode {
+  FRETE_CALCULADO
+  ENTREGA_LOCAL
+  COTACAO_MANUAL
+  RETIRADA
+}
+
+enum PaymentMethod {
+  pix
+  credit_card
+  boleto
+}
+
+model Product {
+  id               String      @id @default(uuid())
+  sku              String      @unique // código do txt (ex: f4kveuwd5v)
+  name             String
+  description      String
+  // Preço: fixo (UNIT) ou por m² (M2) — catálogo Mãos de Ouro é 100% M2
+  unit             String      @default("M2")
+  price            Decimal     @db.Decimal(10, 2) // fallback / exibição "a partir de"
+  price_per_m2     Decimal?    @db.Decimal(10, 2)
+  variants         Json?       // [{vidro, aluminio, linha, price_per_m2}]
+  type             ProductType @default(CUSTOM_PROJECT)
+  // --- Cubagem obrigatória (Frenet falha sem isso) ---
+  weight_kg        Float
+  length_cm        Float
+  width_cm         Float
+  height_cm        Float
+  volumes          Int         @default(1)
+  requires_install Boolean     @default(false)
+  fragile_glass    Boolean     @default(false)
+  // --- Integração Cakto (1 produto = 1 checkout) ---
+  cakto_product_id String?
+  cakto_offer_id   String?
+  active           Boolean     @default(true)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  orderItems       OrderItem[]
+
+  @@index([type, active])
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  docType   String // cpf | cnpj
+  docNumber String
+  fingerprint String?
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  customerId      String
+  customer        Customer      @relation(fields: [customerId], references: [id])
+  status          OrderStatus   @default(PENDING_PAYMENT)
+  paymentMethod   PaymentMethod
+  // Cakto
+  cakto_order_id  String?       @unique
+  cakto_ref       String?
+  cakto_checkout_url String?
+  idempotency_key String        @unique
+  // Valores
+  subtotal        Decimal       @db.Decimal(10, 2)
+  shipping_price  Decimal       @default(0) @db.Decimal(10, 2)
+  total           Decimal       @db.Decimal(10, 2)
+  // Frete
+  shipping_mode   ShippingMode
+  cep_destino     String
+  carrier         String?
+  items           OrderItem[]
+  events          WebhookEvent[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model OrderItem {
+  id         String  @id @default(uuid())
+  orderId    String
+  order      Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product @relation(fields: [productId], references: [id])
+  quantity   Int     @default(1)
+  unit_price Decimal @db.Decimal(10, 2)
+}
+
+model ShippingQuote {
+  id            String       @id @default(uuid())
+  cep_destino   String
+  mode          ShippingMode
+  carrier       String?
+  price         Decimal?     @db.Decimal(10, 2)
+  deadline_days Int?
+  message       String?
+  payload       Json?
+  createdAt     DateTime     @default(now())
+}
+
+model WebhookEvent {
+  id         String   @id @default(uuid())
+  orderId    String?
+  order      Order?   @relation(fields: [orderId], references: [id])
+  source     String   // cakto | frenet | n8n
+  event      String   // purchase_approved, pix_gerado, etc.
+  payload    Json
+  processed  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([source, event])
+}

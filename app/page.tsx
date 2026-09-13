@@ -29,6 +29,31 @@ export default function Catalogo() {
     setSelectedVariant(variant);
     setPixData(null);
     setShippingQuotes([]);
+
+    // Rastreamento: Início do Checkout / Add to Cart
+    if (typeof window !== 'undefined') {
+      const price = quoteM2(variant.price_per_m2, largura, altura);
+      // Meta Pixel
+      if ((window as any).fbq) {
+        (window as any).fbq('track', 'InitiateCheckout', {
+          content_name: productName,
+          content_ids: [variant.sku],
+          value: price,
+          currency: 'BRL',
+        });
+      }
+      // Google Tag Manager / Analytics
+      if ((window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'begin_checkout',
+          ecommerce: {
+            currency: 'BRL',
+            value: price,
+            items: [{ item_id: variant.sku, item_name: productName, price: price, quantity: 1 }]
+          }
+        });
+      }
+    }
   };
 
   const calcShipping = async () => {
@@ -57,18 +82,32 @@ export default function Catalogo() {
     if (!selectedQuote) return alert('Selecione um frete primeiro');
     setLoadingPix(true);
     try {
+      const totalCost = finalPrice + selectedQuote.price;
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...customer,
-          total: finalPrice + selectedQuote.price,
+          total: totalCost,
           shipping: selectedQuote,
           items: [{ name: selectedProductName, price: finalPrice }]
         })
       });
       const data = await res.json();
       setPixData(data);
+
+      // Rastreamento: Compra (Geração do PIX)
+      if (typeof window !== 'undefined') {
+        if ((window as any).fbq) {
+          (window as any).fbq('track', 'Purchase', { value: totalCost, currency: 'BRL' });
+        }
+        if ((window as any).dataLayer) {
+          (window as any).dataLayer.push({
+            event: 'purchase',
+            ecommerce: { transaction_id: data.orderId || new Date().getTime().toString(), value: totalCost, currency: 'BRL' }
+          });
+        }
+      }
     } catch (e) {
       alert('Erro ao gerar PIX');
     }

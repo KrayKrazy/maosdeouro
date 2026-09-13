@@ -1,4 +1,9 @@
 import type { Metadata } from 'next';
+import './globals.css';
+import { Montserrat, Roboto } from 'next/font/google';
+
+const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat' });
+const roboto = Roboto({ weight: ['400', '500', '700'], subsets: ['latin'], variable: '--font-roboto' });
 
 export const metadata: Metadata = {
   title: 'Mãos de Ouro | Serralheria e Vidraçaria em Goiânia — Portões, Janelas, Fachadas',
@@ -24,14 +29,14 @@ const localBusinessLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
-      <body>
+    <html lang="pt-BR" className={`${montserrat.variable} ${roboto.variable}`}>
+      <body className="font-roboto bg-slate-50 text-slate-900">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
         />
-        <header>
-          <nav aria-label="Principal">MÃOS DE OURO — Goiânia</nav>
+        <header className="bg-black border-b border-gold/30">
+          <nav aria-label="Principal" className="max-w-7xl mx-auto px-6 py-4 font-montserrat font-bold text-gold">MÃOS DE OURO — Goiânia</nav>
         </header>
         <main>{children}</main>
       </body>

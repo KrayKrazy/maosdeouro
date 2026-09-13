@@ -294,9 +294,13 @@ export default function Storefront() {
                       <h4 className="font-bold text-sm uppercase tracking-wider text-slate-800 mb-4">2. Acabamento</h4>
                       <div className="space-y-3">
                         {activeProduct.variants.map((v) => (
-                          <label key={v.sku} className={`flex items-center justify-between p-4 border rounded cursor-pointer transition-all ${selectedVariant?.sku === v.sku ? 'border-black bg-slate-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                          <label 
+                            key={v.sku} 
+                            onClick={() => setSelectedVariant(v)}
+                            className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all shadow-sm ${selectedVariant?.sku === v.sku ? 'border-black bg-slate-50' : 'border-slate-200 hover:border-slate-300'}`}
+                          >
                             <div className="flex items-center gap-3">
-                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedVariant?.sku === v.sku ? 'border-black' : 'border-slate-300'}`}>
+                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${selectedVariant?.sku === v.sku ? 'border-black' : 'border-slate-300'}`}>
                                 {selectedVariant?.sku === v.sku && <div className="w-2 h-2 bg-black rounded-full" />}
                               </div>
                               <span className="text-sm font-medium text-slate-700">

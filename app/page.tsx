@@ -138,29 +138,36 @@ export default function Catalogo() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {CATALOG.map((p) => (
-          <article key={p.base_sku} className="border border-slate-200 rounded-xl p-6 bg-white hover:shadow-lg transition-shadow">
-            <h2 className="font-montserrat font-bold text-xl mb-1">{p.name}</h2>
-            <p className="text-slate-500 mb-4 text-sm font-medium">A partir de {fmt(p.from_price_per_m2)}/m²</p>
-            <ul className="space-y-3">
-              {p.variants.map((v) => (
-                <li key={v.sku} className="text-sm p-4 bg-slate-50 rounded-lg flex flex-col justify-between items-start gap-2">
-                  <div className="text-slate-700">
-                    {[v.aluminio, v.vidro, v.linha, v.modelo].filter(Boolean).join(' • ')} —{' '}
-                    <strong className="text-black">{fmt(v.price_per_m2)}/m²</strong>
-                  </div>
-                  {v.price_per_m2 > 0 && (
-                    <div className="flex w-full justify-between items-center mt-2 border-t border-slate-200 pt-2">
-                      <div className="text-gold font-bold text-lg">
-                        = {fmt(quoteM2(v.price_per_m2, largura, altura))} <span className="text-xs text-slate-400 font-normal">({largura}×{altura}m)</span>
-                      </div>
-                      <button onClick={() => handleBuy(p.name, v)} className="bg-black text-white px-4 py-2 rounded-md font-bold hover:bg-slate-800 transition-colors">
-                        Comprar
-                      </button>
+          <article key={p.base_sku} className="border border-slate-200 rounded-xl bg-white hover:shadow-lg transition-shadow overflow-hidden flex flex-col">
+            {p.image && (
+              <div className="w-full h-48 bg-slate-100 overflow-hidden">
+                <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+              </div>
+            )}
+            <div className="p-6 flex-1 flex flex-col">
+              <h2 className="font-montserrat font-bold text-xl mb-1">{p.name}</h2>
+              <p className="text-slate-500 mb-4 text-sm font-medium">A partir de {fmt(p.from_price_per_m2)}/m²</p>
+              <ul className="space-y-3 flex-1">
+                {p.variants.map((v) => (
+                  <li key={v.sku} className="text-sm p-4 bg-slate-50 rounded-lg flex flex-col justify-between items-start gap-2">
+                    <div className="text-slate-700">
+                      {[v.aluminio, v.vidro, v.linha, v.modelo].filter(Boolean).join(' • ')} —{' '}
+                      <strong className="text-black">{fmt(v.price_per_m2)}/m²</strong>
                     </div>
-                  )}
-                </li>
-              ))}
-            </ul>
+                    {v.price_per_m2 > 0 && (
+                      <div className="flex w-full justify-between items-center mt-2 border-t border-slate-200 pt-2">
+                        <div className="text-gold font-bold text-lg">
+                          = {fmt(quoteM2(v.price_per_m2, largura, altura))} <span className="text-xs text-slate-400 font-normal">({largura}×{altura}m)</span>
+                        </div>
+                        <button onClick={() => handleBuy(p.name, v)} className="bg-black text-white px-4 py-2 rounded-md font-bold hover:bg-slate-800 transition-colors">
+                          Comprar
+                        </button>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </article>
         ))}
       </div>

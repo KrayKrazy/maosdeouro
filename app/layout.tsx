@@ -69,7 +69,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
         />
         <header className="bg-black border-b border-gold/30">
-          <nav aria-label="Principal" className="max-w-7xl mx-auto px-6 py-4 font-montserrat font-bold text-gold">MÃOS DE OURO — Goiânia</nav>
+          <nav aria-label="Principal" className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
+            <img src="/images/logo.jpg" alt="Logo Mãos de Ouro" className="h-12 w-auto rounded-md object-contain" />
+            <span className="font-montserrat font-bold text-gold text-xl hidden sm:block">MÃOS DE OURO — Goiânia</span>
+          </nav>
         </header>
         <main>{children}</main>
       </body>

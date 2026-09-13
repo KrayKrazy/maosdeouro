@@ -95,6 +95,9 @@ model Order {
   subtotal        Decimal       @db.Decimal(10, 2)
   shipping_price  Decimal       @default(0) @db.Decimal(10, 2)
   total           Decimal       @db.Decimal(10, 2)
+  // Cartão de Crédito
+  installments    Int           @default(1)
+  installment_val Decimal?      @db.Decimal(10, 2)
   // Frete
   shipping_mode   ShippingMode
   cep_destino     String

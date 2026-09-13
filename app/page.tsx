@@ -306,31 +306,64 @@ export default function Storefront() {
                   </div>
                 )}
 
-                {/* PASSO 2: LEAD */}
+                {/* PASSO 2: LEAD CAPTURE */}
                 {checkoutStep === 'LEAD' && (
-                  <div className="space-y-6 animate-fadeIn">
-                    <button onClick={() => setCheckoutStep('CONFIG')} className="text-xs text-slate-400 hover:text-black uppercase tracking-widest font-bold mb-4 flex items-center gap-1">← Voltar</button>
+                  <div className="space-y-6 animate-scaleUp">
+                    <button onClick={() => setCheckoutStep('CONFIG')} className="text-xs text-slate-400 hover:text-black uppercase tracking-widest font-bold mb-4 flex items-center gap-1 transition-colors">← Voltar</button>
                     
-                    <h3 className="font-montserrat font-bold text-xl text-black">Seus Dados</h3>
-                    <p className="text-sm text-slate-500 mb-6">Para calcularmos o frete e emitirmos o pedido, precisamos te conhecer.</p>
+                    <div>
+                      <h3 className="font-montserrat font-bold text-xl text-black">Seus Dados</h3>
+                      <p className="text-sm text-slate-500 mt-1">Para calcularmos o frete e emitirmos o pedido, precisamos te conhecer.</p>
+                    </div>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                       <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nome Completo</label>
-                        <input type="text" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} className="w-full p-3 border border-slate-200 rounded focus:border-black outline-none" />
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Nome Completo</label>
+                        <input 
+                          type="text" 
+                          value={customer.name} 
+                          onChange={e => setCustomer({...customer, name: e.target.value})} 
+                          className="w-full p-3.5 border border-slate-200 rounded-lg focus:border-black focus:ring-1 focus:ring-black outline-none transition-all shadow-sm hover:border-slate-300"
+                          placeholder="Digite seu nome"
+                        />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">E-mail Principal</label>
-                        <input type="email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} className="w-full p-3 border border-slate-200 rounded focus:border-black outline-none" />
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">E-mail Principal</label>
+                        <input 
+                          type="email" 
+                          value={customer.email} 
+                          onChange={e => setCustomer({...customer, email: e.target.value})} 
+                          className="w-full p-3.5 border border-slate-200 rounded-lg focus:border-black focus:ring-1 focus:ring-black outline-none transition-all shadow-sm hover:border-slate-300"
+                          placeholder="voce@email.com"
+                        />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp</label>
-                        <input type="text" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} className="w-full p-3 border border-slate-200 rounded focus:border-black outline-none" />
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">WhatsApp</label>
+                        <input 
+                          type="text" 
+                          value={customer.phone} 
+                          onChange={e => {
+                            let v = e.target.value.replace(/\D/g, '');
+                            if (v.length > 11) v = v.slice(0, 11);
+                            if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+                            else if (v.length > 5) v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+                            setCustomer({...customer, phone: v});
+                          }} 
+                          className="w-full p-3.5 border border-slate-200 rounded-lg focus:border-black focus:ring-1 focus:ring-black outline-none transition-all shadow-sm hover:border-slate-300"
+                          placeholder="(11) 99999-9999"
+                        />
                       </div>
                     </div>
 
-                    <button onClick={submitLead} disabled={loading} className="w-full bg-black text-white uppercase tracking-widest font-bold text-sm py-4 rounded hover:bg-gold hover:text-black transition-all mt-4">
-                      {loading ? 'Processando...' : 'Ir para Entrega'}
+                    <button onClick={() => {
+                      if (!customer.name || customer.name.length < 3) return alert('Por favor, informe seu nome completo.');
+                      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                      if (!emailRegex.test(customer.email)) return alert('Por favor, informe um e-mail válido.');
+                      if (customer.phone.replace(/\D/g, '').length < 10) return alert('Por favor, informe um WhatsApp válido com DDD.');
+                      submitLead();
+                    }} disabled={loading} className="w-full bg-black text-white uppercase tracking-widest font-bold text-sm py-4 rounded-lg hover:bg-gold hover:text-black hover:-translate-y-1 hover:shadow-xl transition-all duration-300 mt-6 flex items-center justify-center gap-2">
+                      {loading ? 'Processando...' : 'Ir para Entrega →'}
                     </button>
                   </div>
                 )}

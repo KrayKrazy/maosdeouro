@@ -45,6 +45,12 @@ export async function POST(req: Request) {
         installments: installments || 1,
         shipping_mode: 'FRETE_CALCULADO',
         cep_destino: shipping.cep || '00000000',
+        address_street: body.address?.street,
+        address_number: body.address?.number,
+        address_complement: body.address?.complement,
+        address_district: body.address?.neighborhood,
+        address_city: body.address?.city,
+        address_state: body.address?.state,
         carrier: shipping.carrier,
         idempotency_key: idempotencyKey,
       }

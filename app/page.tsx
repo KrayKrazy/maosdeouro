@@ -76,14 +76,22 @@ export default function Storefront() {
     }
   };
 
+  const [address, setAddress] = useState({
+    street: '', neighborhood: '', city: '', state: '', number: '', complement: '', reference: ''
+  });
+
   const calcShipping = async () => {
+    const cleanCep = cep.replace(/\D/g, '');
+    if (cleanCep.length < 8) return alert('CEP inválido');
+
     setLoading(true);
     try {
+      // 1. Busca Frete
       const res = await fetch('/api/frete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          cep,
+          cep: cleanCep,
           peso: 50,
           comprimento: (largura as number) * 100,
           altura: (altura as number) * 100,
@@ -92,8 +100,21 @@ export default function Storefront() {
       });
       const data = await res.json();
       if (data.quotes) setShippingQuotes(data.quotes);
+
+      // 2. Busca Endereço
+      const viaCepRes = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const viaCepData = await viaCepRes.json();
+      if (!viaCepData.erro) {
+        setAddress(prev => ({
+          ...prev, 
+          street: viaCepData.logradouro, 
+          neighborhood: viaCepData.bairro, 
+          city: viaCepData.localidade, 
+          state: viaCepData.uf
+        }));
+      }
     } catch (e) {
-      alert('Erro ao calcular frete');
+      alert('Erro ao calcular frete ou buscar endereço');
     }
     setLoading(false);
   };
@@ -121,6 +142,7 @@ export default function Storefront() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...customer,
+          address,
           total: totalCost,
           shipping: selectedQuote,
           items: [{ name: activeProduct?.name, price: finalPrice }],
@@ -376,8 +398,13 @@ export default function Storefront() {
                     <h3 className="font-montserrat font-bold text-xl text-black">Entrega (Frenet)</h3>
                     
                     <div className="flex gap-2">
-                      <input type="text" value={cep} onChange={(e) => setCep(e.target.value)} placeholder="CEP (Apenas números)" className="flex-1 p-3 border border-slate-200 rounded focus:border-black outline-none" />
-                      <button onClick={calcShipping} disabled={loading} className="bg-slate-200 px-6 rounded font-bold text-slate-700 hover:bg-slate-300">
+                      <input type="text" value={cep} onChange={(e) => {
+                        let v = e.target.value.replace(/\D/g, '');
+                        if (v.length > 8) v = v.slice(0, 8);
+                        if (v.length > 5) v = v.replace(/^(\d{5})(\d{1,3}).*/, '$1-$2');
+                        setCep(v);
+                      }} placeholder="CEP (00000-000)" className="flex-1 p-3.5 border border-slate-200 rounded-lg focus:border-black outline-none shadow-sm" />
+                      <button onClick={calcShipping} disabled={loading} className="bg-slate-200 px-6 rounded-lg font-bold text-slate-700 hover:bg-slate-300 transition-colors shadow-sm">
                         {loading ? '...' : 'Buscar'}
                       </button>
                     </div>
@@ -385,7 +412,7 @@ export default function Storefront() {
                     {shippingQuotes.length > 0 && (
                       <div className="space-y-3 pt-4 border-t border-slate-100">
                         {shippingQuotes.map((q, i) => (
-                          <label key={i} className={`flex items-center justify-between p-4 border rounded cursor-pointer transition-all ${selectedQuote === q ? 'border-black bg-slate-50' : 'border-slate-200'}`}>
+                          <label key={i} className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all shadow-sm ${selectedQuote === q ? 'border-black bg-slate-50' : 'border-slate-200 hover:border-slate-300'}`}>
                             <div className="flex items-center gap-3">
                               <input type="radio" className="accent-black" checked={selectedQuote === q} onChange={() => setSelectedQuote(q)} />
                               <div>
@@ -399,9 +426,39 @@ export default function Storefront() {
                       </div>
                     )}
 
+                    {shippingQuotes.length > 0 && address.street && (
+                      <div className="space-y-4 pt-4 border-t border-slate-100 animate-slideUp">
+                        <h4 className="font-bold text-sm uppercase tracking-wider text-slate-800">Endereço de Entrega</h4>
+                        
+                        <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                          <p className="text-sm font-medium text-black">{address.street}, {address.neighborhood}</p>
+                          <p className="text-sm text-slate-600">{address.city} - {address.state}</p>
+                        </div>
+
+                        <div className="flex gap-4">
+                          <div className="w-1/3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Número</label>
+                            <input type="text" value={address.number} onChange={e => setAddress({...address, number: e.target.value})} className="w-full p-3.5 border border-slate-200 rounded-lg focus:border-black focus:ring-1 focus:ring-black outline-none transition-all shadow-sm" placeholder="123" />
+                          </div>
+                          <div className="w-2/3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Complemento (Opcional)</label>
+                            <input type="text" value={address.complement} onChange={e => setAddress({...address, complement: e.target.value})} className="w-full p-3.5 border border-slate-200 rounded-lg focus:border-black focus:ring-1 focus:ring-black outline-none transition-all shadow-sm" placeholder="Apto, Bloco..." />
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Ponto de Referência (Opcional)</label>
+                          <input type="text" value={address.reference} onChange={e => setAddress({...address, reference: e.target.value})} className="w-full p-3.5 border border-slate-200 rounded-lg focus:border-black focus:ring-1 focus:ring-black outline-none transition-all shadow-sm" placeholder="Próximo a..." />
+                        </div>
+                      </div>
+                    )}
+
                     {selectedQuote && (
-                      <button onClick={() => setCheckoutStep('PAYMENT')} className="w-full bg-black text-white uppercase tracking-widest font-bold text-sm py-4 rounded hover:bg-gold hover:text-black transition-all mt-6">
-                        Confirmar Frete
+                      <button onClick={() => {
+                        if (address.street && !address.number) return alert('Por favor, informe o número da residência.');
+                        setCheckoutStep('PAYMENT');
+                      }} className="w-full bg-black text-white uppercase tracking-widest font-bold text-sm py-4 rounded-lg hover:bg-gold hover:text-black hover:-translate-y-1 hover:shadow-xl transition-all duration-300 mt-6 flex items-center justify-center gap-2">
+                        Confirmar Frete e Endereço →
                       </button>
                     )}
                   </div>

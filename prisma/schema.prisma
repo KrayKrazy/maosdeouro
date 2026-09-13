@@ -98,14 +98,21 @@ model Order {
   // Cartão de Crédito
   installments    Int           @default(1)
   installment_val Decimal?      @db.Decimal(10, 2)
-  // Frete
-  shipping_mode   ShippingMode
-  cep_destino     String
-  carrier         String?
-  items           OrderItem[]
-  events          WebhookEvent[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  // Frete e Endereço
+  shipping_mode      ShippingMode
+  cep_destino        String
+  address_street     String?
+  address_number     String?
+  address_complement String?
+  address_district   String?
+  address_city       String?
+  address_state      String?
+  carrier            String?
+  
+  items              OrderItem[]
+  events             WebhookEvent[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 
   @@index([status])
 }

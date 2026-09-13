@@ -8,6 +8,10 @@ module.exports = {
       colors: {
         gold: '#D4AF37',
       },
+      fontFamily: {
+        montserrat: ['var(--font-montserrat)', 'sans-serif'],
+        roboto: ['var(--font-roboto)', 'sans-serif'],
+      },
     },
   },
   plugins: [],

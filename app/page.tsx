@@ -11,6 +11,7 @@ const fmt = (v: number) =>
 export default function Storefront() {
 
   const [catalog, setCatalog] = useState<CatalogProduct[]>([]);
+const [debugError, setDebugError] = useState<string>('');
   const [loadingCatalog, setLoadingCatalog] = useState(true);
 
   useEffect(() => {
@@ -269,7 +270,8 @@ export default function Storefront() {
       </div>
 
       
-      {/* SE��O BENTO GRID - DIFERENCIAIS (Extra�do de 21st MCP) */}
+      {debugError && <div className="bg-red-500 text-white p-4 max-w-7xl mx-auto mt-4 rounded">ERRO SUPABASE: {debugError}</div>}
+        {/* SE��O BENTO GRID - DIFERENCIAIS (Extra�do de 21st MCP) */}
       <section className="max-w-7xl mx-auto px-6 pt-20 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -351,7 +353,7 @@ export default function Storefront() {
             <h2 className="font-serif text-3xl font-bold tracking-tight text-white">{selectedCategory === 'Todas' ? 'Cole&ccedil;&atilde;o Completa' : selectedCategory}</h2>
             <p className="text-gray-400 mt-2 text-sm">Fabrica&ccedil;&atilde;o pr&oacute;pria sob medida com entrega para todo o Brasil.</p>
           </div>
-          <span className="text-gray-500 text-sm hidden sm:block">{filteredProducts.length} produtos</span>
+          <span className="text-gray-500 text-sm hidden sm:block">{filteredProducts.length} produtos (Catalog: {catalog.length})</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">

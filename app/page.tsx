@@ -81,7 +81,7 @@ export default function Storefront() {
   const filteredProducts = useMemo(() => {
     let prods = catalog;
     if (selectedCategory !== 'Todas') prods = prods.filter(p => p.category === selectedCategory);
-    return prods.sort((a, b) => a.curve.localeCompare(b.curve));
+    return prods.sort((a, b) => (a.curve || "").localeCompare(b.curve || ""));
   }, [selectedCategory]);
 
   const openProduct = (p: CatalogProduct) => {
@@ -236,6 +236,16 @@ export default function Storefront() {
       {/* HEADER / NAV - Estilo Boutique */}
       {/* CATALOGO - Grid Clean e Altamente Conversível */}
       
+      
+      <header className="fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="font-serif text-[#D4AF37] font-bold text-lg tracking-widest uppercase">M�os de Ouro</div>
+          <a href="/cliente" className="text-xs text-gray-300 hover:text-[#D4AF37] border border-white/10 hover:border-[#D4AF37]/50 px-4 py-2 rounded-full transition-all uppercase tracking-wider">
+            Painel do Cliente
+          </a>
+        </div>
+      </header>
+
       {/* HERO SECTION PREMIUM */}
       <div className="relative w-full h-[60vh] bg-[#050505] flex items-center justify-center overflow-hidden border-b border-[#D4AF37]/10">
         <div className="absolute inset-0 bg-[url('/images/lux-bg.jpg')] bg-cover bg-center opacity-10 mix-blend-luminosity"></div>
@@ -361,8 +371,8 @@ export default function Storefront() {
                 )}
                 
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
-                  {p.curve === 'A' && <span className="bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold border-none text-[10px] font-bold px-2 py-1 uppercase tracking-widest">Mais Vendido</span>}
-                  {p.tags[0] && <span className="bg-gold text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest shadow-sm">{p.tags[0]}</span>}
+                  {(p.curve || "") === 'A' && <span className="bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold border-none text-[10px] font-bold px-2 py-1 uppercase tracking-widest">Mais Vendido</span>}
+                  {(p.tags && p.tags[0]) && <span className="bg-gold text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest shadow-sm">{(p.tags && p.tags[0])}</span>}
                 </div>
 
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6">

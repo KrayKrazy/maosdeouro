@@ -25,12 +25,15 @@ export default function Storefront() {
   useEffect(() => {
     async function loadCatalog() {
       const { data, error } = await supabase.from('products').select('*, variants(*)').order('name');
+      if (error) {
+        console.error('[loadCatalog] Supabase error:', error);
+      }
       if (data) {
         // Map the image_url to image and variants array
         const formatted = data.map(p => ({
           ...p,
           image: p.image_url,
-          from_price_per_m2: Math.min(...p.variants.map((v: any) => v.price_per_m2))
+          from_price_per_m2: p.variants?.length > 0 ? Math.min(...p.variants.map((v: any) => v.price_per_m2)) : 0
         }));
         setCatalog(formatted as any);
       }

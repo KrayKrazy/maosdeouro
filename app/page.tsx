@@ -14,6 +14,15 @@ export default function Storefront() {
   const [loadingCatalog, setLoadingCatalog] = useState(true);
 
   useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        supabase.from('profiles').select('*').eq('id', session.user.id).single().then(({data}) => {
+          if(data) setUserProfile(data);
+        });
+      }
+    });
+  }, []);
+  useEffect(() => {
     async function loadCatalog() {
       const { data, error } = await supabase.from('products').select('*, variants(*)').order('name');
       if (data) {
@@ -45,6 +54,11 @@ export default function Storefront() {
   const [customer, setCustomer] = useState({ name: '', email: '', phone: '', docNumber: '' });
   const [cep, setCep] = useState('');
   const [shippingQuotes, setShippingQuotes] = useState<any[]>([]);
+  const [includesInstallation, setIncludesInstallation] = useState<boolean>(true);
+  const [authMode, setAuthMode] = useState<'LOGIN'|'REGISTER'>('REGISTER');
+  const [cpf, setCpf] = useState('');
+  const [password, setPassword] = useState('');
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [selectedQuote, setSelectedQuote] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [pixData, setPixData] = useState<any>(null);
@@ -148,6 +162,15 @@ export default function Storefront() {
   const [card, setCard] = useState({ number: '', holderName: '', expMonth: '', expYear: '', cvv: '' });
 
   const submitPayment = async () => {
+    // 1. Salvar no Supabase Orders
+    if (userProfile) {
+      await supabase.from('orders').insert({
+        user_id: userProfile.id,
+        items: [{ product: activeProduct.name, variant: selectedVariant, width: largura, height: altura, price: calculateTotal() }],
+        total_price: calculateTotal(),
+        includes_installation: includesInstallation
+      });
+    }
     if (!selectedQuote) return alert('Selecione um frete primeiro');
     
     // Validação de Cartão
@@ -435,67 +458,67 @@ export default function Storefront() {
 
                 {/* PASSO 2: LEAD CAPTURE */}
                 {checkoutStep === 'LEAD' && (
-                  <div className="space-y-6 animate-scaleUp">
-                    <button onClick={() => setCheckoutStep('CONFIG')} className="text-xs text-gray-500 hover:text-white uppercase tracking-widest font-bold mb-4 flex items-center gap-1 transition-colors">← Voltar</button>
+                  <div className="animate-fadeIn">
+                    <button onClick={() => setCheckoutStep('CONFIG')} className="text-xs text-gray-500 hover:text-white uppercase tracking-widest font-bold mb-4 flex items-center gap-1 transition-colors">? Voltar</button>
                     
-                    <div>
-                      <h3 className="font-serif font-bold text-xl text-white">Seus Dados</h3>
-                      <p className="text-sm text-gray-400 mt-1">Para calcularmos o frete e emitirmos o pedido, precisamos te conhecer.</p>
-                    </div>
+                    <h3 className="font-serif text-xl text-white mb-2">Identifica��o</h3>
+                    <p className="text-gray-400 text-sm mb-6">Para gerar seu contrato de {includesInstallation ? 'fornecimento e instala��o' : 'fornecimento'}, precisamos de alguns dados.</p>
                     
-                    <div className="space-y-5">
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Nome Completo</label>
-                        <input 
-                          type="text" 
-                          value={customer.name} 
-                          onChange={e => setCustomer({...customer, name: e.target.value})} 
-                          className="w-full p-3.5 border border-white/10 rounded-lg focus:border-[#D4AF37] focus:ring-1 focus:ring-black outline-none bg-[#111] text-white border-white/10 focus:ring-1 focus:ring-[#D4AF37]/50 transition-all shadow-sm hover:border-white/20"
-                          placeholder="Digite seu nome"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">E-mail Principal</label>
-                        <input 
-                          type="email" 
-                          value={customer.email} 
-                          onChange={e => setCustomer({...customer, email: e.target.value})} 
-                          className="w-full p-3.5 border border-white/10 rounded-lg focus:border-[#D4AF37] focus:ring-1 focus:ring-black outline-none bg-[#111] text-white border-white/10 focus:ring-1 focus:ring-[#D4AF37]/50 transition-all shadow-sm hover:border-white/20"
-                          placeholder="voce@email.com"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">WhatsApp</label>
-                        <input 
-                          type="text" 
-                          value={customer.phone} 
-                          onChange={e => {
-                            let v = e.target.value.replace(/\D/g, '');
-                            if (v.length > 11) v = v.slice(0, 11);
-                            if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-                            else if (v.length > 5) v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-                            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-                            setCustomer({...customer, phone: v});
-                          }} 
-                          className="w-full p-3.5 border border-white/10 rounded-lg focus:border-[#D4AF37] focus:ring-1 focus:ring-black outline-none bg-[#111] text-white border-white/10 focus:ring-1 focus:ring-[#D4AF37]/50 transition-all shadow-sm hover:border-white/20"
-                          placeholder="(11) 99999-9999"
-                        />
-                      </div>
-                    </div>
+                    <div className="space-y-4">
+                      {authMode === 'REGISTER' && (
+                        <div>
+                          <label className="block text-xs text-gray-400 uppercase tracking-widest mb-1">Nome Completo / Raz�o Social</label>
+                          <input type="text" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} className="w-full bg-black border border-white/20 rounded px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37]" placeholder="Digite seu nome completo" />
+                        </div>
+                      )}
 
-                    <button onClick={() => {
-                      if (!customer.name || customer.name.length < 3) return alert('Por favor, informe seu nome completo.');
-                      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                      if (!emailRegex.test(customer.email)) return alert('Por favor, informe um e-mail válido.');
-                      if (customer.phone.replace(/\D/g, '').length < 10) return alert('Por favor, informe um WhatsApp válido com DDD.');
-                      submitLead();
-                    }} disabled={loading} className="w-full bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold border-none uppercase tracking-widest font-bold text-sm py-4 rounded-lg hover:bg-gold hover:text-white hover:-translate-y-1 hover:shadow-xl transition-all duration-300 mt-6 flex items-center justify-center gap-2">
-                      {loading ? 'Processando...' : 'Ir para Entrega →'}
-                    </button>
+                      <div>
+                        <label className="block text-xs text-gray-400 uppercase tracking-widest mb-1">E-mail</label>
+                        <input type="email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} className="w-full bg-black border border-white/20 rounded px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37]" placeholder="seu@email.com" />
+                      </div>
+
+                      {authMode === 'REGISTER' && (
+                        <div>
+                          <label className="block text-xs text-gray-400 uppercase tracking-widest mb-1">CPF ou CNPJ</label>
+                          <input type="text" value={cpf} onChange={e => setCpf(e.target.value)} className="w-full bg-black border border-white/20 rounded px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37]" placeholder="Somente n�meros" />
+                        </div>
+                      )}
+
+                      <div>
+                        <label className="block text-xs text-gray-400 uppercase tracking-widest mb-1">Senha Segura</label>
+                        <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-black border border-white/20 rounded px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37]" placeholder="******" />
+                      </div>
+
+                      <button onClick={async () => {
+                        setLoading(true);
+                        if (authMode === 'REGISTER') {
+                          const { data, error } = await supabase.auth.signUp({ email: customer.email, password });
+                          if (data?.user) {
+                            await supabase.from('profiles').update({ full_name: customer.name, cpf_cnpj: cpf }).eq('id', data.user.id);
+                            setUserProfile({ id: data.user.id, full_name: customer.name, cpf_cnpj: cpf });
+                            setCheckoutStep('SHIPPING');
+                          }
+                        } else {
+                          const { data, error } = await supabase.auth.signInWithPassword({ email: customer.email, password });
+                          if (data?.user) {
+                            const {data: prof} = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
+                            setUserProfile(prof);
+                            setCheckoutStep('SHIPPING');
+                          }
+                        }
+                        setLoading(false);
+                      }} disabled={loading} className="w-full bg-white text-black uppercase tracking-widest font-bold text-sm py-4 rounded hover:bg-gray-200 transition-colors mt-2">
+                        {loading ? 'Aguarde...' : (authMode === 'REGISTER' ? 'Criar Conta e Prosseguir' : 'Entrar e Prosseguir')}
+                      </button>
+
+                      <div className="text-center mt-4">
+                        <button onClick={() => setAuthMode(authMode === 'LOGIN' ? 'REGISTER' : 'LOGIN')} className="text-xs text-[#D4AF37] hover:underline">
+                          {authMode === 'LOGIN' ? 'N�o tem conta? Criar agora' : 'J� tem conta? Fazer Login'}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
-
-                {/* PASSO 3: FRETE */}
                 {checkoutStep === 'SHIPPING' && (
                   <div className="space-y-6 animate-fadeIn">
                     <button onClick={() => setCheckoutStep('LEAD')} className="text-xs text-gray-500 hover:text-white uppercase tracking-widest font-bold mb-4 flex items-center gap-1">← Voltar</button>

@@ -1,21 +1,20 @@
 const fs = require('fs');
 let code = fs.readFileSync('C:/maosdeouro/app/page.tsx', 'utf8');
 
-// Replace Hero Heading
-code = code.replace(/<h1[\s\S]*?<\/h1>/, `<h1 className="font-serif text-5xl md:text-7xl text-white font-light tracking-tight mb-4">
-            Mãos de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
-          </h1>`);
+const bentoJSX = `
+      {/* SEÇÃO BENTO GRID - DIFERENCIAIS (Extraído de 21st MCP) */}
+      <section className="max-w-7xl mx-auto px-6 pt-20 pb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-10 text-center"
+        >
+          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O Padrão Mãos de Ouro</span>
+          <h2 className="font-serif text-3xl md:text-4xl text-white mt-3">Por que somos diferentes?</h2>
+        </motion.div>
 
-// Replace Hero Subtext
-code = code.replace(/<p className="text-gray-400 text-sm md:text-base tracking-\[0.2em\] uppercase max-w-xl leading-relaxed">[\s\S]*?<\/p>/, `<p className="text-gray-400 text-sm md:text-base tracking-[0.2em] uppercase max-w-xl leading-relaxed">
-            A excelência do sob medida. Exclusividade e sofisticação em cada detalhe da sua esquadria.
-          </p>`);
-
-// Replace Bento Grid Label
-code = code.replace(/<span className="text-\[#D4AF37\] uppercase tracking-\[0.3em\] text-xs font-bold">[\s\S]*?<\/span>/, `<span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O Padrão Mãos de Ouro</span>`);
-
-// Replace the actual grid content
-const bentoFix = `        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]">
           <motion.div
             className="md:col-span-2 bg-[#0a0a0a] border border-white/10 rounded-xl p-8 flex flex-col hover:border-[#D4AF37]/50 transition-colors cursor-pointer overflow-hidden relative group"
             initial={{ opacity: 0, y: 30 }}
@@ -76,9 +75,11 @@ const bentoFix = `        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 
               <p className="text-gray-400 text-sm mt-2 max-w-md">Nossa equipe de engenharia garante que sua esquadria nunca sairá do prumo ou apresentará vazamentos.</p>
             </div>
           </motion.div>
-        </div>`;
+        </div>
+      </section>
+`;
 
-code = code.replace(/<div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-\[250px\]">[\s\S]*?<\/div>\s*<\/section>/, bentoFix + '\n      </section>');
+code = code.split('<main className="max-w-7xl mx-auto px-6 pt-12">').join(bentoJSX + '\n      <main className="max-w-7xl mx-auto px-6 pt-12" id="catalogo">');
 
 fs.writeFileSync('C:/maosdeouro/app/page.tsx', code, 'utf8');
-console.log('Fixed successfully with JS script!');
+console.log('Bento Grid Injetado!');

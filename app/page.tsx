@@ -179,7 +179,7 @@ export default function Storefront() {
   };
 
   return (
-    <div className="bg-[#FAFAFA] min-h-screen font-roboto text-white pb-24">
+    <div className="bg-[#050505] min-h-screen font-roboto text-white pb-24">
       {/* HEADER / NAV - Estilo Boutique */}
       {/* CATALOGO - Grid Clean e Altamente Conversível */}
       
@@ -218,7 +218,7 @@ export default function Storefront() {
           <h2 className="font-serif text-3xl md:text-4xl text-white mt-3">Por que somos diferentes?</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]">
           <motion.div
             className="md:col-span-2 bg-[#0a0a0a] border border-white/10 rounded-xl p-8 flex flex-col hover:border-[#D4AF37]/50 transition-colors cursor-pointer overflow-hidden relative group"
             initial={{ opacity: 0, y: 30 }}

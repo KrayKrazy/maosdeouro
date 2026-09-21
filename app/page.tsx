@@ -76,13 +76,13 @@ export default function Storefront() {
   }
 
   // Derivar categorias
-  const categories = useMemo(() => ['Todas', ...Array.from(new Set(catalog.map(p => p.category)))], []);
+  const categories = useMemo(() => ['Todas', ...Array.from(new Set(catalog.map(p => p.category)))], [catalog]);
   
   const filteredProducts = useMemo(() => {
     let prods = catalog;
     if (selectedCategory !== 'Todas') prods = prods.filter(p => p.category === selectedCategory);
     return prods.sort((a, b) => (a.curve || "").localeCompare(b.curve || ""));
-  }, [selectedCategory]);
+  }, [catalog, selectedCategory]);
 
   const openProduct = (p: CatalogProduct) => {
     setActiveProduct(p);

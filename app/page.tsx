@@ -63,9 +63,14 @@ export default function Storefront() {
   const [loading, setLoading] = useState(false);
   const [pixData, setPixData] = useState<any>(null);
 
-  const finalPrice = selectedVariant && typeof largura === 'number' && typeof altura === 'number' 
+    let finalPrice = selectedVariant && typeof largura === 'number' && typeof altura === 'number' 
     ? quoteM2(selectedVariant.price_per_m2, largura, altura) 
     : 0;
+
+  if (finalPrice > 0 && includesInstallation) {
+    // Adiciona 25% de taxa de servi�o/instala��o
+    finalPrice = finalPrice * 1.25;
+  }
 
   // Derivar categorias
   const categories = useMemo(() => ['Todas', ...Array.from(new Set(catalog.map(p => p.category)))], []);
@@ -166,8 +171,8 @@ export default function Storefront() {
     if (userProfile) {
       await supabase.from('orders').insert({
         user_id: userProfile.id,
-        items: [{ product: activeProduct.name, variant: selectedVariant, width: largura, height: altura, price: calculateTotal() }],
-        total_price: calculateTotal(),
+        items: [{ product: activeProduct.name, variant: selectedVariant, width: largura, height: altura, price: finalPrice }],
+        total_price: finalPrice,
         includes_installation: includesInstallation
       });
     }
@@ -602,7 +607,13 @@ export default function Storefront() {
                     {/* Resumo */}
                     <div className="bg-[#1a1a1a] p-4 rounded border border-slate-100 space-y-2 text-sm mb-6">
                       <div className="flex justify-between text-slate-600">
-                        <span>Produto</span><span>{fmt(finalPrice)}</span>
+                        <span>Produto</span>
+                         <span className="flex flex-col items-end">
+                           {fmt(finalPrice)}
+                           {includesInstallation && finalPrice > 0 && (
+                             <span className="text-[10px] text-[#D4AF37] mt-1 uppercase tracking-wider">+ Instalação</span>
+                           )}
+                         </span>
                       </div>
                       <div className="flex justify-between text-slate-600 border-b border-white/10 pb-2">
                         <span>Frete</span><span>{fmt(selectedQuote.price)}</span>

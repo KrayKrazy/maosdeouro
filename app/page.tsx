@@ -196,10 +196,10 @@ export default function Storefront() {
         >
           <div className="w-16 h-[1px] bg-[#D4AF37] mb-6"></div>
           <h1 className="font-serif text-5xl md:text-7xl text-white font-light tracking-tight mb-4">
-            M�os de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
+            Mãos de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
           </h1>
           <p className="text-gray-400 text-sm md:text-base tracking-[0.2em] uppercase max-w-xl leading-relaxed">
-            A excel�ncia do sob medida. Exclusividade e sofistica��o em cada detalhe da sua esquadria.
+            A excelência do sob medida. Exclusividade e sofisticação em cada detalhe da sua esquadria.
           </p>
           <div className="w-16 h-[1px] bg-[#D4AF37] mt-8"></div>
         </motion.div>
@@ -214,7 +214,7 @@ export default function Storefront() {
           viewport={{ once: true }}
           className="mb-10 text-center"
         >
-          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O Padr�o M�os de Ouro</span>
+          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O padrão Mãos de Ouro</span>
           <h2 className="font-serif text-3xl md:text-4xl text-white mt-3">Por que somos diferentes?</h2>
         </motion.div>
 
@@ -229,8 +229,8 @@ export default function Storefront() {
             <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="flex-1"></div>
             <div className="relative z-10">
-              <h3 className="font-serif text-2xl text-white font-medium">Fabrica��o Pr�pria</h3>
-              <p className="text-gray-400 text-sm mt-2 max-w-md">Controle total de qualidade. Cortamos, montamos e instalamos sem terceiriza��o, garantindo o padr�o Classe A em cada mil�metro.</p>
+              <h3 className="font-serif text-2xl text-white font-medium">Fabricação Própria</h3>
+              <p className="text-gray-400 text-sm mt-2 max-w-md">Controle total de qualidade. Cortamos, montamos e instalamos sem terceirização, garantindo o padrão Classe A em cada milímetro.</p>
             </div>
           </motion.div>
 
@@ -260,7 +260,7 @@ export default function Storefront() {
              <div className="absolute inset-0 bg-[url('/images/lux-bg.jpg')] bg-cover opacity-5 group-hover:opacity-10 transition-opacity mix-blend-luminosity"></div>
             <div className="flex-1 flex justify-end flex-col relative z-10">
               <h3 className="font-serif text-2xl text-white font-medium">Design Minimalista</h3>
-              <p className="text-gray-400 text-sm mt-2">Perfis ocultos e integra��o total com o seu projeto arquitet�nico.</p>
+              <p className="text-gray-400 text-sm mt-2">Perfis ocultos e integração total com o seu projeto arquitetônico.</p>
             </div>
           </motion.div>
 
@@ -275,8 +275,8 @@ export default function Storefront() {
             <div className="absolute inset-0 bg-gradient-to-tl from-[#D4AF37]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="flex-1"></div>
             <div className="relative z-10">
-              <h3 className="font-serif text-2xl text-white font-medium">Garantia de Instala��o</h3>
-              <p className="text-gray-400 text-sm mt-2 max-w-md">Nossa equipe de engenharia garante que sua esquadria nunca sair� do prumo ou apresentar� vazamentos.</p>
+              <h3 className="font-serif text-2xl text-white font-medium">Garantia de Instalação</h3>
+              <p className="text-gray-400 text-sm mt-2 max-w-md">Nossa equipe de engenharia garante que sua esquadria nunca sairá do prumo ou apresentará vazamentos.</p>
             </div>
           </motion.div>
         </div>

@@ -2,12 +2,34 @@
 import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { CATALOG, quoteM2, Variant, CatalogProduct } from '../data/products';
+import { quoteM2, Variant, CatalogProduct } from '../data/products';
+import { supabase } from '@/lib/supabase';
 
 const fmt = (v: number) =>
   v <= 0 ? 'Sob consulta' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export default function Storefront() {
+
+  const [catalog, setCatalog] = useState<CatalogProduct[]>([]);
+  const [loadingCatalog, setLoadingCatalog] = useState(true);
+
+  useEffect(() => {
+    async function loadCatalog() {
+      const { data, error } = await supabase.from('products').select('*, variants(*)').order('name');
+      if (data) {
+        // Map the image_url to image and variants array
+        const formatted = data.map(p => ({
+          ...p,
+          image: p.image_url,
+          from_price_per_m2: Math.min(...p.variants.map((v: any) => v.price_per_m2))
+        }));
+        setCatalog(formatted as any);
+      }
+      setLoadingCatalog(false);
+    }
+    loadCatalog();
+  }, []);
+
   const [selectedCategory, setSelectedCategory] = useState<string>('Todas');
 
   // Fluxo do Modal
@@ -32,10 +54,10 @@ export default function Storefront() {
     : 0;
 
   // Derivar categorias
-  const categories = useMemo(() => ['Todas', ...Array.from(new Set(CATALOG.map(p => p.category)))], []);
+  const categories = useMemo(() => ['Todas', ...Array.from(new Set(catalog.map(p => p.category)))], []);
   
   const filteredProducts = useMemo(() => {
-    let prods = CATALOG;
+    let prods = catalog;
     if (selectedCategory !== 'Todas') prods = prods.filter(p => p.category === selectedCategory);
     return prods.sort((a, b) => a.curve.localeCompare(b.curve));
   }, [selectedCategory]);

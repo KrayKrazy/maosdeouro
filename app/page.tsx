@@ -181,28 +181,6 @@ export default function Storefront() {
   return (
     <div className="bg-[#FAFAFA] min-h-screen font-roboto text-white pb-24">
       {/* HEADER / NAV - Estilo Boutique */}
-      <div className="bg-black/90 backdrop-blur-xl border-b border-[#D4AF37]/20 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex gap-4 items-center">
-            <img src="/images/logo.jpg" alt="Logo Mãos de Ouro" className="h-10 w-auto rounded object-contain invert brightness-200 sepia-[.5] hue-rotate-[10deg] saturate-[2]" />
-            <h1 className="font-serif text-xl font-bold tracking-tight uppercase text-white">Mãos de Ouro</h1>
-          </div>
-          <nav className="flex gap-2 sm:gap-6 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`whitespace-nowrap text-sm font-medium transition-colors uppercase tracking-widest px-2 py-1 border-b-2 ${
-                  selectedCategory === cat ? 'border-gold text-white' : 'border-transparent text-gray-500 hover:text-[#D4AF37]'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-
       {/* CATALOGO - Grid Clean e Altamente Conversível */}
       
       {/* HERO SECTION PREMIUM */}

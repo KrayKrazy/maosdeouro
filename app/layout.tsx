@@ -57,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="font-roboto bg-slate-50 text-slate-900">
+      <body className="font-roboto bg-[#050505] text-white selection:bg-[#D4AF37] selection:text-black">
         <noscript>
           <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-SEU-ID-AQUI" height="0" width="0" style={{ display: 'none', visibility: 'hidden' }}></iframe>
         </noscript>

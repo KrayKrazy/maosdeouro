@@ -239,7 +239,7 @@ export default function Storefront() {
       
       <header className="fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="font-serif text-[#D4AF37] font-bold text-lg tracking-widest uppercase">M�os de Ouro</div>
+          <div className="font-serif text-[#D4AF37] font-bold text-lg tracking-widest uppercase">M&atilde;os de Ouro</div>
           <a href="/cliente" className="text-xs text-gray-300 hover:text-[#D4AF37] border border-white/10 hover:border-[#D4AF37]/50 px-4 py-2 rounded-full transition-all uppercase tracking-wider">
             Painel do Cliente
           </a>
@@ -259,7 +259,7 @@ export default function Storefront() {
         >
           <div className="w-16 h-[1px] bg-[#D4AF37] mb-6"></div>
           <h1 className="font-serif text-5xl md:text-7xl text-white font-light tracking-tight mb-4">
-            Mãos de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
+            M&atilde;os de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
           </h1>
           <p className="text-gray-400 text-sm md:text-base tracking-[0.2em] uppercase max-w-xl leading-relaxed">
             A excelência do sob medida. Exclusividade e sofisticação em cada detalhe da sua esquadria.
@@ -277,7 +277,7 @@ export default function Storefront() {
           viewport={{ once: true }}
           className="mb-10 text-center"
         >
-          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O padrão Mãos de Ouro</span>
+          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O padrão M&atilde;os de Ouro</span>
           <h2 className="font-serif text-3xl md:text-4xl text-white mt-3">Por que somos diferentes?</h2>
         </motion.div>
 
@@ -348,8 +348,8 @@ export default function Storefront() {
       <main className="max-w-7xl mx-auto px-6 pt-12" id="catalogo">
         <div className="flex justify-between items-end mb-8">
           <div>
-            <h2 className="font-serif text-3xl font-bold tracking-tight text-white">{selectedCategory === 'Todas' ? 'Coleção Completa' : selectedCategory}</h2>
-            <p className="text-gray-400 mt-2 text-sm">Fabricação própria sob medida com entrega para todo o Brasil.</p>
+            <h2 className="font-serif text-3xl font-bold tracking-tight text-white">{selectedCategory === 'Todas' ? 'Cole&ccedil;&atilde;o Completa' : selectedCategory}</h2>
+            <p className="text-gray-400 mt-2 text-sm">Fabrica&ccedil;&atilde;o pr&oacute;pria sob medida com entrega para todo o Brasil.</p>
           </div>
           <span className="text-gray-500 text-sm hidden sm:block">{filteredProducts.length} produtos</span>
         </div>

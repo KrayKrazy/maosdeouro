@@ -1,4 +1,15 @@
+const fs = require('fs');
 
+// 1. Fix header encoding
+let pageCode = fs.readFileSync('C:/maosdeouro/app/page.tsx', 'utf8');
+pageCode = pageCode.replace(/M�os de Ouro/g, 'M&atilde;os de Ouro');
+pageCode = pageCode.replace(/Mãos de/g, 'M&atilde;os de');
+pageCode = pageCode.replace(/Coleção Completa/g, 'Cole&ccedil;&atilde;o Completa');
+pageCode = pageCode.replace(/Fabricação própria/g, 'Fabrica&ccedil;&atilde;o pr&oacute;pria');
+fs.writeFileSync('C:/maosdeouro/app/page.tsx', pageCode, 'utf8');
+
+// 2. Rewrite cliente page to include a login form
+const clienteCode = `
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -79,8 +90,8 @@ export default function ClienteDashboard() {
 
   return (
     <div className="animate-fadeIn">
-      <h2 className="text-2xl font-serif mb-2 text-white">Ol�, {userProfile?.full_name?.split(" ")[0]}!</h2>
-      <p className="text-gray-400 text-sm mb-8">Acompanhe a produ��o e o status dos seus pedidos premium.</p>
+      <h2 className="text-2xl font-serif mb-2 text-white">Ol�, {userProfile?.full_name?.split(" ")[0]}!</h2>
+      <p className="text-gray-400 text-sm mb-8">Acompanhe a produ��o e o status dos seus pedidos premium.</p>
 
       {orders.length === 0 ? (
         <div className="bg-[#111] border border-white/10 p-8 text-center rounded">
@@ -118,3 +129,7 @@ export default function ClienteDashboard() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync('C:/maosdeouro/app/cliente/page.tsx', clienteCode, 'utf8');
+console.log('Fixed panel and encoding!');

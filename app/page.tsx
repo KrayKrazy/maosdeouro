@@ -168,7 +168,7 @@ export default function Storefront() {
 
   const submitPayment = async () => {
     // 1. Salvar no Supabase Orders
-    if (userProfile) {
+    if (userProfile && activeProduct) {
       await supabase.from('orders').insert({
         user_id: userProfile.id,
         items: [{ product: activeProduct.name, variant: selectedVariant, width: largura, height: altura, price: finalPrice }],

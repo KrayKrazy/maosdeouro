@@ -34,8 +34,8 @@ export default function AdminDashboard() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-2xl font-serif text-white">Catálogo de Produtos</h2>
-          <p className="text-sm text-gray-400 mt-1">Gerencie os itens, variações e preços por metro quadrado.</p>
+          <h2 className="text-2xl font-serif text-white">Catï¿½logo de Produtos</h2>
+          <p className="text-sm text-gray-400 mt-1">Gerencie os itens, variaï¿½ï¿½es e preï¿½os por metro quadrado.</p>
         </div>
         <button className="bg-[#D4AF37] hover:bg-[#b5952f] text-black font-bold py-2 px-4 rounded text-sm transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)]">
           + Novo Produto
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
       </div>
 
       {loading ? (
-        <div className="text-center py-20 text-[#D4AF37] animate-pulse">Carregando catálogo...</div>
+        <div className="text-center py-20 text-[#D4AF37] animate-pulse">Carregando catï¿½logo...</div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {products.map(p => (
@@ -71,12 +71,12 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="mt-6">
-                  <h4 className="text-xs uppercase tracking-widest text-gray-500 mb-3">Variantes & Preços (R$ / {p.unit})</h4>
+                  <h4 className="text-xs uppercase tracking-widest text-gray-500 mb-3">Variantes & Preï¿½os (R$ / {p.unit})</h4>
                   <div className="bg-[#111] border border-white/5 rounded-lg divide-y divide-white/5">
                     {p.variants && p.variants.map((v: any) => (
                       <div key={v.id} className="p-3 flex items-center justify-between hover:bg-white/5 transition-colors">
                         <div className="flex flex-col">
-                          <span className="text-sm text-gray-300 font-medium">{v.vidro || v.aluminio || v.linha || v.modelo || 'Padrão'}</span>
+                          <span className="text-sm text-gray-300 font-medium">{v.vidro || v.aluminio || v.linha || v.modelo || 'Padrï¿½o'}</span>
                           <span className="text-xs text-gray-500 font-mono">SKU: {v.sku}</span>
                         </div>
                         <div className="flex items-center gap-3">

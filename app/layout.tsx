@@ -68,12 +68,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
         />
-        <header className="bg-black border-b border-gold/30">
-          <nav aria-label="Principal" className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
-            <img src="/images/logo.jpg" alt="Logo Mãos de Ouro" className="h-12 w-auto rounded-md object-contain" />
-            <span className="font-montserrat font-bold text-gold text-xl hidden sm:block">MÃOS DE OURO — Goiânia</span>
+        <header className="fixed top-0 w-full z-50 bg-[#050505]/90 backdrop-blur-md border-b border-[#D4AF37]/10">
+          <nav aria-label="Principal" className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <img src="/images/logo.jpg" alt="Logo Mãos de Ouro" className="h-10 w-auto rounded-md object-contain" />
+              <span className="font-montserrat font-bold text-[#D4AF37] text-lg tracking-widest uppercase hidden sm:block">Mãos de Ouro</span>
+            </div>
+            <a href="/cliente" className="text-xs text-gray-300 hover:text-[#D4AF37] border border-white/10 hover:border-[#D4AF37]/50 px-4 py-2 rounded-full transition-all uppercase tracking-wider">
+              Painel do Cliente
+            </a>
           </nav>
         </header>
+        <div className="h-16" />
         <main>{children}</main>
       </body>
     </html>

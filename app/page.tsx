@@ -11,7 +11,6 @@ const fmt = (v: number) =>
 export default function Storefront() {
 
   const [catalog, setCatalog] = useState<CatalogProduct[]>([]);
-const [debugError, setDebugError] = useState<string>('');
   const [loadingCatalog, setLoadingCatalog] = useState(true);
 
   useEffect(() => {
@@ -234,19 +233,8 @@ const [debugError, setDebugError] = useState<string>('');
 
   return (
     <div className="bg-[#050505] min-h-screen font-roboto text-white pb-24">
-      {/* HEADER / NAV - Estilo Boutique */}
       {/* CATALOGO - Grid Clean e Altamente Conversível */}
       
-      
-      <header className="fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="font-serif text-[#D4AF37] font-bold text-lg tracking-widest uppercase">M&atilde;os de Ouro</div>
-          <a href="/cliente" className="text-xs text-gray-300 hover:text-[#D4AF37] border border-white/10 hover:border-[#D4AF37]/50 px-4 py-2 rounded-full transition-all uppercase tracking-wider">
-            Painel do Cliente
-          </a>
-        </div>
-      </header>
-
       {/* HERO SECTION PREMIUM */}
       <div className="relative w-full h-[60vh] bg-[#050505] flex items-center justify-center overflow-hidden border-b border-[#D4AF37]/10">
         <div className="absolute inset-0 bg-[url('/images/lux-bg.jpg')] bg-cover bg-center opacity-10 mix-blend-luminosity"></div>
@@ -260,7 +248,7 @@ const [debugError, setDebugError] = useState<string>('');
         >
           <div className="w-16 h-[1px] bg-[#D4AF37] mb-6"></div>
           <h1 className="font-serif text-5xl md:text-7xl text-white font-light tracking-tight mb-4">
-            M&atilde;os de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
+            Mãos de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
           </h1>
           <p className="text-gray-400 text-sm md:text-base tracking-[0.2em] uppercase max-w-xl leading-relaxed">
             A excelência do sob medida. Exclusividade e sofisticação em cada detalhe da sua esquadria.
@@ -270,8 +258,7 @@ const [debugError, setDebugError] = useState<string>('');
       </div>
 
       
-      {debugError && <div className="bg-red-500 text-white p-4 max-w-7xl mx-auto mt-4 rounded">ERRO SUPABASE: {debugError}</div>}
-        {/* SE��O BENTO GRID - DIFERENCIAIS (Extra�do de 21st MCP) */}
+      {/* SE��O BENTO GRID - DIFERENCIAIS (Extra�do de 21st MCP) */}
       <section className="max-w-7xl mx-auto px-6 pt-20 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -279,7 +266,7 @@ const [debugError, setDebugError] = useState<string>('');
           viewport={{ once: true }}
           className="mb-10 text-center"
         >
-          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O padrão M&atilde;os de Ouro</span>
+          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O padrão Mãos de Ouro</span>
           <h2 className="font-serif text-3xl md:text-4xl text-white mt-3">Por que somos diferentes?</h2>
         </motion.div>
 
@@ -350,10 +337,10 @@ const [debugError, setDebugError] = useState<string>('');
       <main className="max-w-7xl mx-auto px-6 pt-12" id="catalogo">
         <div className="flex justify-between items-end mb-8">
           <div>
-            <h2 className="font-serif text-3xl font-bold tracking-tight text-white">{selectedCategory === 'Todas' ? 'Cole&ccedil;&atilde;o Completa' : selectedCategory}</h2>
-            <p className="text-gray-400 mt-2 text-sm">Fabrica&ccedil;&atilde;o pr&oacute;pria sob medida com entrega para todo o Brasil.</p>
+            <h2 className="font-serif text-3xl font-bold tracking-tight text-white">{selectedCategory === 'Todas' ? 'Coleção Completa' : selectedCategory}</h2>
+            <p className="text-gray-400 mt-2 text-sm">Fabricação própria sob medida com entrega para todo o Brasil.</p>
           </div>
-          <span className="text-gray-500 text-sm hidden sm:block">{filteredProducts.length} produtos (Catalog: {catalog.length})</span>
+          <span className="text-gray-500 text-sm hidden sm:block">{filteredProducts.length} produtos</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">

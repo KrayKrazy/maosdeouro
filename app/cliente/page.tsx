@@ -14,6 +14,7 @@ export default function ClienteDashboard() {
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [authMode, setAuthMode] = useState<'LOGIN'|'REGISTER'>('LOGIN');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,12 +44,24 @@ export default function ClienteDashboard() {
     e.preventDefault();
     setAuthLoading(true);
     setAuthError("");
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setAuthError("Email ou senha incorretos.");
-      setAuthLoading(false);
-    } else if (data?.user) {
-      loadData(data.user.id);
+    
+    if (authMode === 'REGISTER') {
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        setAuthError(error.message);
+        setAuthLoading(false);
+      } else if (data?.user) {
+        await supabase.from("profiles").upsert({ id: data.user.id, email });
+        loadData(data.user.id);
+      }
+    } else {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setAuthError("Email ou senha incorretos.");
+        setAuthLoading(false);
+      } else if (data?.user) {
+        loadData(data.user.id);
+      }
     }
   };
 
@@ -71,9 +84,14 @@ export default function ClienteDashboard() {
           <input type="password" required value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-[#111] border border-white/10 p-3 rounded text-white outline-none focus:border-[#D4AF37]" placeholder="******" />
         </div>
         <button disabled={authLoading} type="submit" className="w-full mt-4 bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold uppercase tracking-widest text-sm py-3 rounded hover:opacity-90 transition-opacity">
-          {authLoading ? "Entrando..." : "Entrar no Painel"}
+          {authLoading ? "Aguarde..." : (authMode === 'LOGIN' ? "Entrar no Painel" : "Criar Nova Conta")}
         </button>
       </form>
+      <div className="text-center mt-4">
+        <button onClick={() => setAuthMode(authMode === 'LOGIN' ? 'REGISTER' : 'LOGIN')} className="text-xs text-[#D4AF37] hover:underline">
+          {authMode === 'LOGIN' ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça Login'}
+        </button>
+      </div>
     </div>
   );
 

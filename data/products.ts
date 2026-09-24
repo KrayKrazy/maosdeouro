@@ -23,6 +23,7 @@ export type CatalogProduct = {
   from_price_per_m2: number;
   image?: string;
   variants: Variant[];
+  requires_install?: boolean;
 };
 
 export const CATALOG: CatalogProduct[] = [

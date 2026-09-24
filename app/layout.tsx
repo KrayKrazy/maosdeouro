@@ -6,13 +6,13 @@ const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat
 const roboto = Roboto({ weight: ['400', '500', '700'], subsets: ['latin'], variable: '--font-roboto' });
 
 export const metadata: Metadata = {
-  title: 'Mãos de Ouro | Serralheria e Vidraçaria em Goiânia — Portões, Janelas, Fachadas',
+  title: 'Mão de Ouro Esquadrias de Alumínio | Alto Padrão',
   description:
-    'Fabricação própria em Goiânia: portões de correr, portas lambril, janelas integradas, fachadas pele de vidro. Linhas Gold, Suprema e Ecoline. Orçamento grátis.',
+    'Fabricação própria: projetos arquitetônicos de alto padrão, portas lambril, janelas integradas, fachadas pele de vidro. Exclusividade e sofisticação.',
   alternates: { canonical: 'https://maosdeouro.com.br/' },
   openGraph: {
-    title: 'Mãos de Ouro — Serralheria e Vidraçaria',
-    description: 'Esquadrias de alumínio alto padrão + instalação em Goiânia e região.',
+    title: 'Mão de Ouro Esquadrias de Alumínio',
+    description: 'Esquadrias de alumínio alto padrão + instalação premium.',
     locale: 'pt_BR',
     type: 'website',
   },
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
 const localBusinessLd = {
   '@context': 'https://schema.org',
   '@type': 'HomeAndConstructionBusiness',
-  name: 'Mãos de Ouro Serralheria e Vidraçaria',
-  areaServed: ['Goiânia', 'Anápolis', 'Senador Canedo'],
-  telephone: '+55-62-98124-4675',
-  priceRange: '$$',
+  name: 'Mão de Ouro Esquadrias de Alumínio',
+  areaServed: ['Goiânia', 'Anápolis', 'Senador Canedo', 'São Paulo'],
+  telephone: '+55-11-99999-9999',
+  priceRange: '$$$',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -71,12 +71,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="fixed top-0 w-full z-50 bg-[#050505]/90 backdrop-blur-md border-b border-[#D4AF37]/10">
           <nav aria-label="Principal" className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <img src="/images/logo.jpg" alt="Logo Mãos de Ouro" className="h-10 w-auto rounded-md object-contain" />
-              <span className="font-montserrat font-bold text-[#D4AF37] text-lg tracking-widest uppercase hidden sm:block">Mãos de Ouro</span>
+              <img src="/images/logo.jpg" alt="Logo Mão de Ouro" className="h-10 w-auto rounded-md object-contain" />
+              <span className="font-montserrat font-bold text-[#D4AF37] text-lg tracking-widest uppercase hidden md:block">Mão de Ouro Esquadrias de Alumínio</span>
             </div>
-            <a href="/cliente" className="text-xs text-gray-300 hover:text-[#D4AF37] border border-white/10 hover:border-[#D4AF37]/50 px-4 py-2 rounded-full transition-all uppercase tracking-wider">
-              Painel do Cliente
-            </a>
+            <div className="flex items-center gap-4">
+              <a href="tel:11999999999" className="text-xs text-[#D4AF37] border border-[#D4AF37]/50 hover:bg-[#D4AF37] hover:text-black px-4 py-2 rounded-full transition-all uppercase tracking-wider hidden sm:block">
+                SAC (11) 99999-9999
+              </a>
+              <a href="/cliente" className="text-xs text-gray-300 hover:text-[#D4AF37] border border-white/10 hover:border-[#D4AF37]/50 px-4 py-2 rounded-full transition-all uppercase tracking-wider">
+                Painel do Cliente
+              </a>
+            </div>
           </nav>
         </header>
         <div className="h-16" />

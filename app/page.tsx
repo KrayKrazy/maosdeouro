@@ -66,11 +66,12 @@ export default function Storefront() {
   const [loading, setLoading] = useState(false);
   const [pixData, setPixData] = useState<any>(null);
 
-    let finalPrice = selectedVariant && typeof largura === 'number' && typeof altura === 'number' 
-    ? quoteM2(selectedVariant.price_per_m2, largura, altura) 
-    : 0;
-
-  if (finalPrice > 0 && includesInstallation) {
+    let finalPrice = selectedVariant && typeof largura === 'number' && typeof altura === 'number' ? quoteM2(selectedVariant.price_per_m2, largura, altura) : 0;
+  let hasInstallTax = false;
+  if (finalPrice > 0 && activeProduct?.requires_install === true) {
+    finalPrice = finalPrice * 1.20;
+    hasInstallTax = true;
+  } else if (finalPrice > 0 && includesInstallation) {
     // Adiciona 25% de taxa de servi�o/instala��o
     finalPrice = finalPrice * 1.25;
   }
@@ -248,7 +249,7 @@ export default function Storefront() {
         >
           <div className="w-16 h-[1px] bg-[#D4AF37] mb-6"></div>
           <h1 className="font-serif text-5xl md:text-7xl text-white font-light tracking-tight mb-4">
-            Mãos de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
+            Mão de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
           </h1>
           <p className="text-gray-400 text-sm md:text-base tracking-[0.2em] uppercase max-w-xl leading-relaxed">
             A excelência do sob medida. Exclusividade e sofisticação em cada detalhe da sua esquadria.
@@ -266,7 +267,7 @@ export default function Storefront() {
           viewport={{ once: true }}
           className="mb-10 text-center"
         >
-          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O padrão Mãos de Ouro</span>
+          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O padrão Mão de Ouro</span>
           <h2 className="font-serif text-3xl md:text-4xl text-white mt-3">Por que somos diferentes?</h2>
         </motion.div>
 
@@ -451,7 +452,7 @@ export default function Storefront() {
                           {finalPrice > 0 ? fmt(finalPrice) : '---'}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500 text-right">Não inclui frete e instalação</p>
+                      <p className="text-xs text-gray-500 text-right">{hasInstallTax ? '(+20% Taxa de Instalação Inclusa) Não inclui frete' : 'Não inclui frete e instalação'}</p>
                     </div>
 
                     <button 

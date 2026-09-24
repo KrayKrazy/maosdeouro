@@ -1,0 +1,38 @@
+# Diretrizes Operacionais do Agente — Mãos de Ouro E-commerce
+
+## Identidade do Projeto
+- **Projeto:** Mãos de Ouro (e-commerce de tapetes e decoração)
+- **Stack:** Next.js 14 (App Router) + Supabase + Vercel + Cakto (pagamentos)
+- **Repositório:** github.com/KrayKrazy/maosdeouro
+- **Deploy:** https://maosdeouro-delta.vercel.app
+- **Linguagem:** TypeScript (React components), Node.js (API routes)
+
+## Política de Uso de Tokens e Contexto
+- Repositório pequeno e focado — leitura por arquivo é preferida
+- Consulte `.cline_memory/activeContext.md` antes de qualquer tarefa
+- Pastas a ignorar: `node_modules/`, `.next/`, `.git/`
+
+## Memory Bank
+1. `.cline_memory/projectbrief.md` — Escopo e objetivos do e-commerce
+2. `.cline_memory/systemPatterns.md` — Arquitetura Next.js, hooks, RLS Supabase
+3. `.cline_memory/activeContext.md` — Tarefa atual e próximos passos
+4. `.cline_memory/progress.md` — Status das funcionalidades
+
+## Regras de Segurança
+- NUNCA commitar `.env.local` (contém Supabase keys)
+- Variáveis de ambiente de produção estão na Vercel (project: prj_JXlyhonP4IzHODU9UiqUk0Bhgu5p)
+- Antes de qualquer migração SQL no Supabase: mostrar SQL e pedir aprovação
+
+## Arquitetura de Rotas
+- `/` → `app/page.tsx` (vitrine + checkout modal)
+- `/cliente` → `app/cliente/page.tsx` (painel do cliente autenticado)
+- `/admin` → `app/admin/` (painel administrativo)
+- `/api/*` → serverless routes (alerts, checkout, frete, leads, webhooks/cakto)
+
+## Banco de Dados (Supabase icpoujgictqfszzcgspz)
+- Tabelas: `products`, `variants`, `profiles`, `orders`
+- RLS ativo: products/variants têm SELECT público; orders/profiles exigem auth
+
+## Commits
+- Formato: `feat|fix|chore: descrição em PT-BR`
+- Branch principal: `main` → deploy automático na Vercel

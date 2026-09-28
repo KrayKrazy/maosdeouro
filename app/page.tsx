@@ -72,7 +72,7 @@ export default function Storefront() {
     finalPrice = finalPrice * 1.20;
     hasInstallTax = true;
   } else if (finalPrice > 0 && includesInstallation) {
-    // Adiciona 25% de taxa de servi�o/instala��o
+    // Adiciona 25% de taxa de serviço/instalação
     finalPrice = finalPrice * 1.25;
   }
 
@@ -259,7 +259,7 @@ export default function Storefront() {
       </div>
 
       
-      {/* SE��O BENTO GRID - DIFERENCIAIS (Extra�do de 21st MCP) */}
+      {/* SEÇÃO BENTO GRID - DIFERENCIAIS (Extraído de 21st MCP) */}
       <section className="max-w-7xl mx-auto px-6 pt-20 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -469,13 +469,13 @@ export default function Storefront() {
                   <div className="animate-fadeIn">
                     <button onClick={() => setCheckoutStep('CONFIG')} className="text-xs text-gray-500 hover:text-white uppercase tracking-widest font-bold mb-4 flex items-center gap-1 transition-colors">? Voltar</button>
                     
-                    <h3 className="font-serif text-xl text-white mb-2">Identifica��o</h3>
-                    <p className="text-gray-400 text-sm mb-6">Para gerar seu contrato de {includesInstallation ? 'fornecimento e instala��o' : 'fornecimento'}, precisamos de alguns dados.</p>
+                    <h3 className="font-serif text-xl text-white mb-2">Identificação</h3>
+                    <p className="text-gray-400 text-sm mb-6">Para gerar seu contrato de {includesInstallation ? 'fornecimento e instalação' : 'fornecimento'}, precisamos de alguns dados.</p>
                     
                     <div className="space-y-4">
                       {authMode === 'REGISTER' && (
                         <div>
-                          <label className="block text-xs text-gray-400 uppercase tracking-widest mb-1">Nome Completo / Raz�o Social</label>
+                          <label className="block text-xs text-gray-400 uppercase tracking-widest mb-1">Nome Completo / Razão Social</label>
                           <input type="text" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} className="w-full bg-black border border-white/20 rounded px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37]" placeholder="Digite seu nome completo" />
                         </div>
                       )}
@@ -488,7 +488,7 @@ export default function Storefront() {
                       {authMode === 'REGISTER' && (
                         <div>
                           <label className="block text-xs text-gray-400 uppercase tracking-widest mb-1">CPF ou CNPJ</label>
-                          <input type="text" value={cpf} onChange={e => setCpf(e.target.value)} className="w-full bg-black border border-white/20 rounded px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37]" placeholder="Somente n�meros" />
+                          <input type="text" value={cpf} onChange={e => setCpf(e.target.value)} className="w-full bg-black border border-white/20 rounded px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37]" placeholder="Somente números" />
                         </div>
                       )}
 
@@ -521,7 +521,7 @@ export default function Storefront() {
 
                       <div className="text-center mt-4">
                         <button onClick={() => setAuthMode(authMode === 'LOGIN' ? 'REGISTER' : 'LOGIN')} className="text-xs text-[#D4AF37] hover:underline">
-                          {authMode === 'LOGIN' ? 'N�o tem conta? Criar agora' : 'J� tem conta? Fazer Login'}
+                          {authMode === 'LOGIN' ? 'Não tem conta? Criar agora' : 'Já tem conta? Fazer Login'}
                         </button>
                       </div>
                     </div>

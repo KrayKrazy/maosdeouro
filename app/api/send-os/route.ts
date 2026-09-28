@@ -5,13 +5,23 @@ export async function POST(req: Request) {
   try {
     const { orderId, customerName, customerEmail, items, total, address, isInstallation } = await req.json();
 
+    const EMAIL_USER = process.env.EMAIL_USER || 'kelevracontato@gmail.com';
+    const EMAIL_APP_PASSWORD = process.env.EMAIL_APP_PASSWORD;
+
+    if (!EMAIL_APP_PASSWORD) {
+      return NextResponse.json(
+        { error: 'SMTP não configurado (EMAIL_APP_PASSWORD ausente).' },
+        { status: 500 },
+      );
+    }
+
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
       secure: true,
       auth: {
-        user: 'kelevracontato@gmail.com',
-        pass: 'dhkl yvij fsrk nwyn', // App Password
+        user: EMAIL_USER,
+        pass: EMAIL_APP_PASSWORD,
       },
     });
 
@@ -67,8 +77,8 @@ export async function POST(req: Request) {
 
     // Enviar para a fábrica/operacional e cópia pro cliente
     await transporter.sendMail({
-      from: '"Mão de Ouro Esquadrias" <kelevracontato@gmail.com>',
-      to: 'kelevracontato@gmail.com', // Envia para a base operacional
+      from: `"Mão de Ouro Esquadrias" <${EMAIL_USER}>`,
+      to: EMAIL_USER, // Envia para a base operacional
       bcc: customerEmail, // Cópia oculta pro cliente
       subject: `[NOVA OS] Pedido Aprovado #${orderId.substring(0,6)} - ${customerName}`,
       html: htmlContent,

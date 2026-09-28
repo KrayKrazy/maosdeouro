@@ -42,7 +42,7 @@ async function seed() {
     }
   }
 
-  console.log('Seed concluído com sucesso!');
+  console.log('Seed concluÃ­do com sucesso!');
 }
 
 seed();

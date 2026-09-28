@@ -25,4 +25,4 @@
 
 5. **Ordem de Serviço via Email (Backend):**
    - Modificar o fluxo de Sucesso de Checkout (`api/checkout/route.ts` ou criar um novo endpoint `/api/webhooks/cakto/route.ts`).
-   - Usar `nodemailer` com SMTP Gmail (`kelevracontato@gmail.com` / app pwd: `dhkl yvij fsrk nwyn`) para disparar uma "Ordem de Serviço de Esquadrias" para a fábrica e para o cliente após aprovação do pagamento.
+   - Usar `nodemailer` com SMTP Gmail (credenciais via env `EMAIL_USER` / `EMAIL_APP_PASSWORD`) para disparar uma "Ordem de Serviço de Esquadrias" para a fábrica e para o cliente após aprovação do pagamento.

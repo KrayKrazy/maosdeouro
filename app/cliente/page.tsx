@@ -97,8 +97,8 @@ export default function ClienteDashboard() {
 
   return (
     <div className="animate-fadeIn">
-      <h2 className="text-2xl font-serif mb-2 text-white">Ol�, {userProfile?.full_name?.split(" ")[0]}!</h2>
-      <p className="text-gray-400 text-sm mb-8">Acompanhe a produ��o e o status dos seus pedidos premium.</p>
+      <h2 className="text-2xl font-serif mb-2 text-white">Olá, {userProfile?.full_name?.split(" ")[0]}!</h2>
+      <p className="text-gray-400 text-sm mb-8">Acompanhe a produção e o status dos seus pedidos premium.</p>
 
       {orders.length === 0 ? (
         <div className="bg-[#111] border border-white/10 p-8 text-center rounded">

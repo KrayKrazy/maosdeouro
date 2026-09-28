@@ -9,7 +9,7 @@ export default function ClienteLayout({ children }: { children: React.ReactNode 
         </div>
         <nav className="flex gap-6 text-sm font-medium text-gray-400">
           <a href="/cliente" className="text-[#D4AF37]">Meus Pedidos</a>
-          <a href="/" className="hover:text-white transition-colors flex items-center gap-1">Voltar para Loja ?</a>
+          <a href="/" className="hover:text-white transition-colors flex items-center gap-1">Voltar para Loja</a>
         </nav>
       </header>
       <main className="p-4 md:p-8 max-w-6xl mx-auto">

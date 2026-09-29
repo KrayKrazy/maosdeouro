@@ -26,6 +26,19 @@ export type CatalogProduct = {
   requires_install?: boolean;
 };
 
+// ====== Opções de configuração (demandas da cliente) ======
+export const LINHAS = ['Gold', 'Suprema', 'Atlanta'] as const;
+export const VIDROS = ['Incolor', 'Verde', 'Fumê', 'Refletivo Cinza', 'Refletivo Champagne'] as const;
+export const ALUMINIOS = ['Preto', 'Branco', 'Cerejeira Real', 'Bronze'] as const;
+export const ARREMATES = ['Sem arremate', 'Perfil de acabamento em alumínio', 'Acabamento em silicone', 'Guarnição / batedor'] as const;
+export const PUXADOR_TAMANHOS = ['300 mm', '400 mm', '600 mm', '800 mm', '1000 mm', '1200 mm'] as const;
+export const PUXADOR_CORES = ['Inox escovado', 'Preto', 'Branco', 'Dourado', 'Cerejeira'] as const;
+
+// ====== Regras de precificação (ajustáveis) ======
+export const TAXA_INSTALACAO = 0.25;   // +25% sobre a peça
+export const TAXA_FORA_PADRAO = 0.15;  // +15% quando a medida sai do padrão
+export const DESLOCAMENTO_KM_RATE = 5; // R$ por km rodado (deslocamento da equipe)
+
 export const CATALOG: CatalogProduct[] = [
   {
     name: 'Porta Imponente',
@@ -67,7 +80,7 @@ export const CATALOG: CatalogProduct[] = [
     category: 'Fachadas', tags: ['Corporativo', 'Design Moderno'], curve: 'A',
     image: '/images/pele de vidro.jpg',
     variants: [
-      { sku: 'jl9e7am350', aluminio: 'Preto/Branco', vidro: 'Refletivo', linha: 'Ecostik', price_per_m2: 1399 },
+      { sku: 'jl9e7am350', aluminio: 'Preto/Branco', vidro: 'Refletivo', linha: 'Atlanta', price_per_m2: 1399 },
     ],
   },
   {
@@ -130,14 +143,6 @@ export const CATALOG: CatalogProduct[] = [
     variants: [
       { sku: 'hlbrc5wxrg', aluminio: 'Preto', vidro: 'Incolor', linha: 'Suprema', price_per_m2: 880 },
     ],
-  },
-  {
-    name: 'Espelho decorativo',
-    base_sku: 'o9kmkb79h6',
-    type: 'CUSTOM_PROJECT', unit: 'M2', from_price_per_m2: 0,
-    category: 'Espelhos', tags: ['Salas', 'Corredores'], curve: 'C',
-    image: '/images/espelho personalizado.jpg',
-    variants: [{ sku: 'o9kmkb79h6', price_per_m2: 0 }],
   },
 ];
 

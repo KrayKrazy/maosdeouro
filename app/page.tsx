@@ -2,11 +2,13 @@
 import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { quoteM2, Variant, CatalogProduct } from '../data/products';
+import { quoteM2, Variant, CatalogProduct, LINHAS, VIDROS, ALUMINIOS, ARREMATES, PUXADOR_TAMANHOS, PUXADOR_CORES, TAXA_INSTALACAO, TAXA_FORA_PADRAO, DESLOCAMENTO_KM_RATE } from '../data/products';
 import { supabase } from '@/lib/supabase';
 
 const fmt = (v: number) =>
   v <= 0 ? 'Sob consulta' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+const WHATSAPP_TECNICO = 'https://wa.me/5511988888888?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20a%20instala%C3%A7%C3%A3o.';
 
 export default function Storefront() {
 
@@ -66,15 +68,24 @@ export default function Storefront() {
   const [loading, setLoading] = useState(false);
   const [pixData, setPixData] = useState<any>(null);
 
-    let finalPrice = selectedVariant && typeof largura === 'number' && typeof altura === 'number' ? quoteM2(selectedVariant.price_per_m2, largura, altura) : 0;
-  let hasInstallTax = false;
-  if (finalPrice > 0 && activeProduct?.requires_install === true) {
-    finalPrice = finalPrice * 1.20;
-    hasInstallTax = true;
-  } else if (finalPrice > 0 && includesInstallation) {
-    // Adiciona 25% de taxa de serviço/instalação
-    finalPrice = finalPrice * 1.25;
-  }
+  // Configuração avançada (demandas da cliente)
+  const [linha, setLinha] = useState<string>('Suprema');
+  const [vidro, setVidro] = useState<string>('Incolor');
+  const [aluminio, setAluminio] = useState<string>('Preto');
+  const [foraPadrao, setForaPadrao] = useState<boolean>(false);
+  const [arremate, setArremate] = useState<string>(ARREMATES[0]);
+  const [puxadorTamanho, setPuxadorTamanho] = useState<string>(PUXADOR_TAMANHOS[0]);
+  const [puxadorCor, setPuxadorCor] = useState<string>(PUXADOR_CORES[0]);
+  const [deslocamentoKm, setDeslocamentoKm] = useState<number | ''>('');
+
+  const basePrice = selectedVariant && typeof largura === 'number' && typeof altura === 'number'
+    ? quoteM2(selectedVariant.price_per_m2, largura, altura)
+    : 0;
+  const installValue = basePrice > 0 && includesInstallation ? basePrice * TAXA_INSTALACAO : 0;
+  const foraPadraoValue = basePrice > 0 && foraPadrao ? basePrice * TAXA_FORA_PADRAO : 0;
+  const deslocamentoValue = typeof deslocamentoKm === 'number' && deslocamentoKm > 0 ? deslocamentoKm * DESLOCAMENTO_KM_RATE : 0;
+  const finalPrice = basePrice + installValue + foraPadraoValue + deslocamentoValue;
+  const hasInstallTax = includesInstallation;
 
   // Derivar categorias
   const categories = useMemo(() => ['Todas', ...Array.from(new Set(catalog.map(p => p.category)))], [catalog]);
@@ -86,10 +97,20 @@ export default function Storefront() {
   }, [catalog, selectedCategory]);
 
   const openProduct = (p: CatalogProduct) => {
+    const first = p.variants[0];
     setActiveProduct(p);
-    setSelectedVariant(p.variants[0]);
+    setSelectedVariant(first);
     setLargura('');
     setAltura('');
+    setLinha((first?.linha as string) || 'Suprema');
+    setVidro((first?.vidro as string) || 'Incolor');
+    setAluminio((first?.aluminio as string) || 'Preto');
+    setForaPadrao(false);
+    setArremate(ARREMATES[0]);
+    setPuxadorTamanho(PUXADOR_TAMANHOS[0]);
+    setPuxadorCor(PUXADOR_CORES[0]);
+    setDeslocamentoKm('');
+    setIncludesInstallation(p.requires_install === true);
     setCheckoutStep('CONFIG');
   };
 
@@ -175,7 +196,20 @@ export default function Storefront() {
     if (userProfile && activeProduct) {
       await supabase.from('orders').insert({
         user_id: userProfile.id,
-        items: [{ product: activeProduct.name, variant: selectedVariant, width: largura, height: altura, price: finalPrice }],
+        items: [{
+          product: activeProduct.name,
+          variant: selectedVariant,
+          width: largura,
+          height: altura,
+          linha,
+          vidro,
+          aluminio,
+          fora_padrao: foraPadrao,
+          arremate,
+          puxador: { tamanho: puxadorTamanho, cor: puxadorCor },
+          deslocamento_km: deslocamentoKm,
+          price: finalPrice
+        }],
         total_price: finalPrice,
         includes_installation: includesInstallation
       });
@@ -200,7 +234,7 @@ export default function Storefront() {
           address,
           total: totalCost,
           shipping: selectedQuote,
-          items: [{ name: activeProduct?.name, price: finalPrice }],
+          items: [{ name: activeProduct?.name, price: finalPrice, linha, vidro, aluminio, foraPadrao, arremate, puxadorTamanho, puxadorCor, deslocamentoKm, largura, altura }],
           paymentMethod,
           installments,
           card: paymentMethod === 'credit_card' ? card : undefined
@@ -233,13 +267,13 @@ export default function Storefront() {
   };
 
   return (
-    <div className="bg-[#050505] min-h-screen font-roboto text-white pb-24">
+    <div className="bg-[#0a0a0a] min-h-screen font-roboto text-white pb-24">
       {/* CATALOGO - Grid Clean e Altamente Conversível */}
       
       {/* HERO SECTION PREMIUM */}
-      <div className="relative w-full h-[60vh] bg-[#050505] flex items-center justify-center overflow-hidden border-b border-[#D4AF37]/10">
+      <div className="relative w-full h-[60vh] bg-[#0a0a0a] flex items-center justify-center overflow-hidden border-b border-[#D4AF37]/10">
         <div className="absolute inset-0 bg-[url('/images/lux-bg.jpg')] bg-cover bg-center opacity-10 mix-blend-luminosity"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent"></div>
         
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -249,7 +283,7 @@ export default function Storefront() {
         >
           <div className="w-16 h-[1px] bg-[#D4AF37] mb-6"></div>
           <h1 className="font-serif text-5xl md:text-7xl text-white font-light tracking-tight mb-4">
-            Mão de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
+            Mãos de <span className="text-[#D4AF37] font-semibold italic">Ouro</span>
           </h1>
           <p className="text-gray-400 text-sm md:text-base tracking-[0.2em] uppercase max-w-xl leading-relaxed">
             A excelência do sob medida. Exclusividade e sofisticação em cada detalhe da sua esquadria.
@@ -267,7 +301,7 @@ export default function Storefront() {
           viewport={{ once: true }}
           className="mb-10 text-center"
         >
-          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O padrão Mão de Ouro</span>
+          <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">O padrão Mãos de Ouro</span>
           <h2 className="font-serif text-3xl md:text-4xl text-white mt-3">Por que somos diferentes?</h2>
         </motion.div>
 
@@ -335,6 +369,21 @@ export default function Storefront() {
         </div>
       </section>
 
+      {/* PAINEL DO CLIENTE — centralizado e chamativo */}
+      <section className="max-w-7xl mx-auto px-6 pt-16">
+        <div className="relative overflow-hidden rounded-2xl border border-[#D4AF37]/25 bg-gradient-to-r from-[#14110a] via-[#1a160e] to-[#14110a] p-8 md:p-12 text-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/10 to-transparent" />
+          <div className="relative z-10">
+            <span className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs font-bold">Área exclusiva</span>
+            <h2 className="font-serif text-3xl md:text-4xl text-white mt-3">Painel do Cliente</h2>
+            <p className="text-gray-300 text-sm md:text-base mt-4 max-w-2xl mx-auto">Acompanhe a produção, o status e o rastreio dos seus pedidos premium em um só lugar. Acesso rápido após a compra.</p>
+            <a href="/cliente" className="inline-block mt-6 bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-full hover:brightness-110 transition-all">
+              Acessar Painel do Cliente
+            </a>
+          </div>
+        </div>
+      </section>
+
       <main className="max-w-7xl mx-auto px-6 pt-12" id="catalogo">
         <div className="flex justify-between items-end mb-8">
           <div>
@@ -344,10 +393,16 @@ export default function Storefront() {
           <span className="text-gray-500 text-sm hidden sm:block">{filteredProducts.length} produtos</span>
         </div>
 
+        <div className="flex flex-wrap gap-2 mb-8">
+          {categories.map((c) => (
+            <button key={c} onClick={() => setSelectedCategory(c)} className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${selectedCategory === c ? 'bg-[#D4AF37] text-black border-[#D4AF37]' : 'bg-[#111] text-gray-300 border-white/10 hover:border-[#D4AF37]/50'}`}>{c}</button>
+          ))}
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
           {filteredProducts.map((p) => (
-            <div key={p.base_sku} className="group cursor-pointer flex flex-col" onClick={() => openProduct(p)}>
-              <div className="relative w-full aspect-[4/5] bg-[#111] mb-4 overflow-hidden rounded-sm">
+            <div key={p.base_sku} className="group flex flex-col">
+              <div className="relative w-full aspect-[4/5] bg-[#111] mb-4 overflow-hidden rounded-lg cursor-pointer" onClick={() => openProduct(p)}>
                 {p.image ? (
                   <Image 
                     src={p.image} 
@@ -361,21 +416,20 @@ export default function Storefront() {
                 )}
                 
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
-                  {(p.curve || "") === 'A' && <span className="bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold border-none text-[10px] font-bold px-2 py-1 uppercase tracking-widest">Mais Vendido</span>}
-                  {(p.tags && p.tags[0]) && <span className="bg-gold text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest shadow-sm">{(p.tags && p.tags[0])}</span>}
-                </div>
-
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6">
-                  <span className="bg-[#0a0a0a] text-white font-bold uppercase tracking-wider text-xs px-6 py-3 rounded shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform">
-                    Configurar Medidas
-                  </span>
+                  {(p.curve || "") === 'A' && <span className="bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold text-[10px] px-2 py-1 uppercase tracking-widest">Mais Vendido</span>}
+                  {(p.tags && p.tags[0]) && <span className="bg-[#0a0a0a]/80 text-[#D4AF37] border border-[#D4AF37]/30 text-[10px] font-bold px-2 py-1 uppercase tracking-widest">{(p.tags && p.tags[0])}</span>}
                 </div>
               </div>
 
               <h3 className="font-serif font-bold text-base text-white leading-snug group-hover:text-[#D4AF37] transition-colors line-clamp-2">
                 {p.name}
               </h3>
-              <p className="text-gray-400 text-sm mt-1">A partir de {fmt(p.from_price_per_m2)}/m²</p>
+              <p className="text-[#D4AF37] font-serif text-lg font-bold mt-2">
+                A partir de {fmt(p.from_price_per_m2)} <span className="text-xs font-sans font-normal text-gray-400">/m²</span>
+              </p>
+              <button onClick={() => openProduct(p)} className="mt-3 w-full bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold uppercase tracking-wider text-sm py-3 rounded-lg hover:brightness-110 transition-all">
+                Configurar Medidas
+              </button>
             </div>
           ))}
         </div>
@@ -398,7 +452,7 @@ export default function Storefront() {
 
             <div className="w-full md:w-1/2 flex flex-col h-full overflow-y-auto bg-[#0a0a0a]">
               
-              <div className="p-6 md:p-10 border-b border-slate-100">
+              <div className="p-6 md:p-10 border-b border-white/10">
                 <div className="text-xs text-gold font-bold uppercase tracking-widest mb-2">{activeProduct.category}</div>
                 <h2 className="font-serif text-2xl font-bold text-white leading-tight">{activeProduct.name}</h2>
               </div>
@@ -409,50 +463,122 @@ export default function Storefront() {
                 {checkoutStep === 'CONFIG' && (
                   <div className="space-y-8 animate-fadeIn">
                     <div>
-                      <h4 className="font-bold text-sm uppercase tracking-wider text-slate-800 mb-4">1. Informe as Medidas</h4>
-                      <div className="flex gap-4">
-                        <label className="flex-1">
-                          <span className="block text-xs text-gray-400 mb-1">Largura (Metros)</span>
-                          <input type="number" step="0.1" min="0.1" value={largura} onChange={e => setLargura(e.target.value === '' ? '' : Number(e.target.value))} placeholder="Ex: 2.0" className="w-full p-3 border border-white/10 rounded focus:border-gold focus:ring-1 focus:ring-gold outline-none bg-[#111] text-white border-white/10 focus:ring-1 focus:ring-[#D4AF37]/50 transition-all" />
-                        </label>
-                        <label className="flex-1">
-                          <span className="block text-xs text-gray-400 mb-1">Altura (Metros)</span>
-                          <input type="number" step="0.1" min="0.1" value={altura} onChange={e => setAltura(e.target.value === '' ? '' : Number(e.target.value))} placeholder="Ex: 2.5" className="w-full p-3 border border-white/10 rounded focus:border-gold focus:ring-1 focus:ring-gold outline-none bg-[#111] text-white border-white/10 focus:ring-1 focus:ring-[#D4AF37]/50 transition-all" />
-                        </label>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-[#D4AF37] mb-3">1. Linha</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {LINHAS.map((l) => (
+                          <button key={l} onClick={() => setLinha(l)} className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${linha === l ? 'bg-[#D4AF37] text-black border-[#D4AF37]' : 'bg-[#111] text-gray-300 border-white/10 hover:border-[#D4AF37]/50'}`}>{l}</button>
+                        ))}
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="font-bold text-sm uppercase tracking-wider text-slate-800 mb-4">2. Acabamento</h4>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-[#D4AF37] mb-3">2. Vidro</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {VIDROS.map((v) => (
+                          <button key={v} onClick={() => setVidro(v)} className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${vidro === v ? 'bg-[#D4AF37] text-black border-[#D4AF37]' : 'bg-[#111] text-gray-300 border-white/10 hover:border-[#D4AF37]/50'}`}>{v}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-[#D4AF37] mb-3">3. Alumínio</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {ALUMINIOS.map((a) => (
+                          <button key={a} onClick={() => setAluminio(a)} className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${aluminio === a ? 'bg-[#D4AF37] text-black border-[#D4AF37]' : 'bg-[#111] text-gray-300 border-white/10 hover:border-[#D4AF37]/50'}`}>{a}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-[#D4AF37] mb-3">4. Medidas (metros)</h4>
+                      <div className="flex gap-4">
+                        <label className="flex-1">
+                          <span className="block text-xs text-gray-400 mb-1">Largura</span>
+                          <input type="number" step="0.1" min="0.1" value={largura} onChange={e => setLargura(e.target.value === '' ? '' : Number(e.target.value))} placeholder="Ex: 2.0" className="w-full p-3 border border-white/10 rounded-lg bg-[#111] text-white outline-none focus:border-[#D4AF37]" />
+                        </label>
+                        <label className="flex-1">
+                          <span className="block text-xs text-gray-400 mb-1">Altura</span>
+                          <input type="number" step="0.1" min="0.1" value={altura} onChange={e => setAltura(e.target.value === '' ? '' : Number(e.target.value))} placeholder="Ex: 2.5" className="w-full p-3 border border-white/10 rounded-lg bg-[#111] text-white outline-none focus:border-[#D4AF37]" />
+                        </label>
+                      </div>
+                      <label className="flex items-center gap-3 mt-3 cursor-pointer">
+                        <input type="checkbox" checked={foraPadrao} onChange={e => setForaPadrao(e.target.checked)} className="accent-[#D4AF37] w-4 h-4" />
+                        <span className="text-sm text-gray-300">Medida fora do padrão <span className="text-[#D4AF37]">(+15%)</span></span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-[#D4AF37] mb-3">5. Arremate</h4>
+                      <select value={arremate} onChange={e => setArremate(e.target.value)} className="w-full p-3 border border-white/10 rounded-lg bg-[#111] text-white outline-none focus:border-[#D4AF37]">
+                        {ARREMATES.map((a) => <option key={a} value={a}>{a}</option>)}
+                      </select>
+                    </div>
+
+                    <div>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-[#D4AF37] mb-3">6. Puxador</h4>
+                      <div className="flex gap-3">
+                        <div className="flex-1">
+                          <span className="block text-xs text-gray-400 mb-1">Tamanho</span>
+                          <select value={puxadorTamanho} onChange={e => setPuxadorTamanho(e.target.value)} className="w-full p-3 border border-white/10 rounded-lg bg-[#111] text-white outline-none focus:border-[#D4AF37]">
+                            {PUXADOR_TAMANHOS.map((t) => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                        </div>
+                        <div className="flex-1">
+                          <span className="block text-xs text-gray-400 mb-1">Cor</span>
+                          <select value={puxadorCor} onChange={e => setPuxadorCor(e.target.value)} className="w-full p-3 border border-white/10 rounded-lg bg-[#111] text-white outline-none focus:border-[#D4AF37]">
+                            {PUXADOR_CORES.map((c) => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-[#D4AF37] mb-3">7. Instalação</h4>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" checked={includesInstallation} onChange={e => setIncludesInstallation(e.target.checked)} className="accent-[#D4AF37] w-4 h-4" />
+                        <span className="text-sm text-gray-300">Incluir instalação <span className="text-[#D4AF37]">(+25%)</span></span>
+                      </label>
+                      <div className="mt-3">
+                        <span className="block text-xs text-gray-400 mb-1">Deslocamento (km — cobrado por km)</span>
+                        <input type="number" min="0" step="1" value={deslocamentoKm} onChange={e => setDeslocamentoKm(e.target.value === '' ? '' : Number(e.target.value))} placeholder="Ex: 15" className="w-full p-3 border border-white/10 rounded-lg bg-[#111] text-white outline-none focus:border-[#D4AF37]" />
+                        {typeof deslocamentoKm === 'number' && deslocamentoKm > 0 && <p className="text-xs text-gray-400 mt-1">{deslocamentoKm} km × R$ {DESLOCAMENTO_KM_RATE},00 = {fmt(deslocamentoKm * DESLOCAMENTO_KM_RATE)}</p>}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-[#D4AF37] mb-3">Acabamento &amp; preço por m²</h4>
                       <div className="space-y-3">
                         {activeProduct.variants.map((v) => (
                           <label 
                             key={v.sku} 
                             onClick={() => setSelectedVariant(v)}
-                            className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all shadow-sm ${selectedVariant?.sku === v.sku ? 'border-black bg-[#1a1a1a]' : 'border-white/10 hover:border-white/20'}`}
+                            className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${selectedVariant?.sku === v.sku ? 'border-[#D4AF37] bg-[#1a1a1a]' : 'border-white/10 hover:border-white/20'}`}
                           >
                             <div className="flex items-center gap-3">
-                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${selectedVariant?.sku === v.sku ? 'border-black' : 'border-white/20'}`}>
-                                {selectedVariant?.sku === v.sku && <div className="w-2 h-2 bg-black rounded-full" />}
+                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedVariant?.sku === v.sku ? 'border-[#D4AF37]' : 'border-white/30'}`}>
+                                {selectedVariant?.sku === v.sku && <div className="w-2 h-2 bg-[#D4AF37] rounded-full" />}
                               </div>
-                              <span className="text-sm font-medium text-slate-700">
+                              <span className="text-sm font-medium text-gray-200">
                                 {[v.aluminio, v.vidro, v.linha].filter(Boolean).join(' • ')}
                               </span>
                             </div>
-                            <span className="text-sm font-bold">{fmt(v.price_per_m2)}/m²</span>
+                            <span className="text-sm font-bold text-[#D4AF37]">{fmt(v.price_per_m2)}/m²</span>
                           </label>
                         ))}
                       </div>
                     </div>
 
-                    <div className="bg-[#1a1a1a] p-6 rounded border border-slate-100">
+                    <div className="bg-gradient-to-r from-[#1a1a1a] to-[#111] p-5 rounded-xl border border-[#D4AF37]/20">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-gray-400 text-sm">Valor Estimado</span>
-                        <span className="font-serif font-bold text-2xl text-white">
-                          {finalPrice > 0 ? fmt(finalPrice) : '---'}
-                        </span>
+                        <span className="text-gray-300 text-sm">Valor Estimado</span>
+                        <span className="font-serif font-bold text-3xl text-[#D4AF37]">{finalPrice > 0 ? fmt(finalPrice) : '---'}</span>
                       </div>
-                      <p className="text-xs text-gray-500 text-right">{hasInstallTax ? '(+20% Taxa de Instalação Inclusa) Não inclui frete' : 'Não inclui frete e instalação'}</p>
+                      <p className="text-xs text-gray-500 text-right">
+                        {hasInstallTax ? 'Inclui instalação (+25%)' : 'Sem instalação'}
+                        {foraPadrao && ' • Fora de padrão (+15%)'}
+                        {typeof deslocamentoKm === 'number' && deslocamentoKm > 0 && ` • Deslocamento ${deslocamentoKm} km`}
+                        {' • Não inclui frete'}
+                      </p>
                     </div>
 
                     <button 
@@ -540,15 +666,15 @@ export default function Storefront() {
                         if (v.length > 5) v = v.replace(/^(\d{5})(\d{1,3}).*/, '$1-$2');
                         setCep(v);
                       }} placeholder="CEP (00000-000)" className="flex-1 p-3.5 border border-white/10 rounded-lg focus:border-[#D4AF37] outline-none bg-[#111] text-white border-white/10 focus:ring-1 focus:ring-[#D4AF37]/50 shadow-sm" />
-                      <button onClick={calcShipping} disabled={loading} className="bg-slate-200 px-6 rounded-lg font-bold text-slate-700 hover:bg-slate-300 transition-colors shadow-sm">
+                      <button onClick={calcShipping} disabled={loading} className="bg-[#D4AF37] px-6 rounded-lg font-bold text-black hover:brightness-110 transition-colors shadow-sm">
                         {loading ? '...' : 'Buscar'}
                       </button>
                     </div>
 
                     {shippingQuotes.length > 0 && (
-                      <div className="space-y-3 pt-4 border-t border-slate-100">
+                      <div className="space-y-3 pt-4 border-t border-white/10">
                         {shippingQuotes.map((q, i) => (
-                          <label key={i} className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all shadow-sm ${selectedQuote === q ? 'border-black bg-[#1a1a1a]' : 'border-white/10 hover:border-white/20'}`}>
+                          <label key={i} className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all shadow-sm ${selectedQuote === q ? 'border-[#D4AF37] bg-[#1a1a1a]' : 'border-white/10 hover:border-white/20'}`}>
                             <div className="flex items-center gap-3">
                               <input type="radio" className="accent-black" checked={selectedQuote === q} onChange={() => setSelectedQuote(q)} />
                               <div>
@@ -563,12 +689,12 @@ export default function Storefront() {
                     )}
 
                     {shippingQuotes.length > 0 && address.street && (
-                      <div className="space-y-4 pt-4 border-t border-slate-100 animate-slideUp">
-                        <h4 className="font-bold text-sm uppercase tracking-wider text-slate-800">Endereço de Entrega</h4>
+                      <div className="space-y-4 pt-4 border-t border-white/10 animate-slideUp">
+                        <h4 className="font-bold text-sm uppercase tracking-wider text-[#D4AF37]">Endereço de Entrega</h4>
                         
                         <div className="bg-[#1a1a1a] p-4 rounded-lg border border-white/10">
                           <p className="text-sm font-medium text-white">{address.street}, {address.neighborhood}</p>
-                          <p className="text-sm text-slate-600">{address.city} - {address.state}</p>
+                          <p className="text-sm text-gray-300">{address.city} - {address.state}</p>
                         </div>
 
                         <div className="flex gap-4">
@@ -608,8 +734,8 @@ export default function Storefront() {
                     <h3 className="font-serif font-bold text-xl text-white">Pagamento</h3>
                     
                     {/* Resumo */}
-                    <div className="bg-[#1a1a1a] p-4 rounded border border-slate-100 space-y-2 text-sm mb-6">
-                      <div className="flex justify-between text-slate-600">
+                    <div className="bg-[#1a1a1a] p-4 rounded border border-white/10 space-y-2 text-sm mb-6">
+                      <div className="flex justify-between text-gray-300">
                         <span>Produto</span>
                          <span className="flex flex-col items-end">
                            {fmt(finalPrice)}
@@ -618,7 +744,7 @@ export default function Storefront() {
                            )}
                          </span>
                       </div>
-                      <div className="flex justify-between text-slate-600 border-b border-white/10 pb-2">
+                      <div className="flex justify-between text-gray-300 border-b border-white/10 pb-2">
                         <span>Frete</span><span>{fmt(selectedQuote.price)}</span>
                       </div>
                       <div className="flex justify-between text-white font-bold text-lg pt-2">
@@ -628,8 +754,8 @@ export default function Storefront() {
 
                     {/* TABS DE PAGAMENTO */}
                     <div className="flex border-b border-white/10 mb-6">
-                      <button onClick={() => setPaymentMethod('pix')} className={`pb-2 px-4 text-sm font-bold uppercase tracking-wider ${paymentMethod === 'pix' ? 'border-b-2 border-black text-white' : 'text-gray-500'}`}>PIX (10% OFF)</button>
-                      <button onClick={() => setPaymentMethod('credit_card')} className={`pb-2 px-4 text-sm font-bold uppercase tracking-wider ${paymentMethod === 'credit_card' ? 'border-b-2 border-black text-white' : 'text-gray-500'}`}>Cartão de Crédito</button>
+                      <button onClick={() => setPaymentMethod('pix')} className={`pb-2 px-4 text-sm font-bold uppercase tracking-wider ${paymentMethod === 'pix' ? 'border-b-2 border-[#D4AF37] text-white' : 'text-gray-500'}`}>PIX (10% OFF)</button>
+                      <button onClick={() => setPaymentMethod('credit_card')} className={`pb-2 px-4 text-sm font-bold uppercase tracking-wider ${paymentMethod === 'credit_card' ? 'border-b-2 border-[#D4AF37] text-white' : 'text-gray-500'}`}>Cartão de Crédito</button>
                     </div>
 
                     {/* DADOS FISCAIS COMUNS */}
@@ -693,7 +819,7 @@ export default function Storefront() {
                           <h3 className="font-serif font-bold text-2xl text-white mb-2">Pix Gerado!</h3>
                           <p className="text-gray-400 text-sm max-w-xs mx-auto">Copie o código abaixo e pague no app do seu banco. A confirmação é instantânea.</p>
                         </div>
-                        <div className="bg-[#1a1a1a] p-4 rounded border border-white/10 break-all text-xs font-mono text-slate-600">
+                        <div className="bg-[#1a1a1a] p-4 rounded border border-white/10 break-all text-xs font-mono text-gray-300">
                           {pixData.pixCode}
                         </div>
                         <button onClick={() => navigator.clipboard.writeText(pixData.pixCode)} className="w-full bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold border-none uppercase tracking-widest font-bold text-sm py-4 rounded hover:bg-gold hover:text-white transition-all">
@@ -707,7 +833,7 @@ export default function Storefront() {
                           <h3 className="font-serif font-bold text-2xl text-white mb-2">Pedido Aprovado!</h3>
                           <p className="text-gray-400 text-sm max-w-xs mx-auto">O pagamento via cartão de crédito foi confirmado com sucesso e seu pedido já está em andamento.</p>
                         </div>
-                        <div className="bg-[#1a1a1a] p-4 rounded border border-white/10 text-sm font-bold text-slate-600">
+                        <div className="bg-[#1a1a1a] p-4 rounded border border-white/10 text-sm font-bold text-gray-300">
                           ID do Pedido: {pixData.orderId}
                         </div>
                         <button onClick={closeModal} className="w-full bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold border-none uppercase tracking-widest font-bold text-sm py-4 rounded hover:bg-gold hover:text-white transition-all">
@@ -715,6 +841,9 @@ export default function Storefront() {
                         </button>
                       </>
                     )}
+                    <a href={WHATSAPP_TECNICO} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 bg-[#00B25A] hover:bg-[#00924A] text-white font-bold uppercase tracking-widest text-sm py-4 rounded transition-all">
+                      WhatsApp do Técnico — dúvidas sobre instalação
+                    </a>
                   </div>
                 )}
 

@@ -79,8 +79,8 @@ export async function POST(req: Request) {
         // Fallback para offerId genérica se o Cakto não aceitar checkout sem Offer ID pré-existente
         offerId: item.offerId || "offer_default_123", 
         quantity: 1,
-        customPrice: Math.round(item.price * 100),
-        description: item.name
+        
+        
       })),
       metadata: {
         orderId: order.id

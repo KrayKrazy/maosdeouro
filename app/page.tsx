@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { quoteM2, Variant, CatalogProduct, LINHAS, VIDROS, ALUMINIOS, ARREMATES, PUXADOR_TAMANHOS, PUXADOR_CORES, TAXA_INSTALACAO, TAXA_FORA_PADRAO, DESLOCAMENTO_KM_RATE } from '../data/products';
+import { quoteM2, Variant, CatalogProduct, CATALOG, LINHAS, VIDROS, ALUMINIOS, ARREMATES, PUXADOR_TAMANHOS, PUXADOR_CORES, TAXA_INSTALACAO, TAXA_FORA_PADRAO, DESLOCAMENTO_KM_RATE } from '../data/products';
 import { supabase } from '@/lib/supabase';
 import MotionButton from '@/components/ui/motion-button';
 
@@ -13,7 +13,7 @@ const WHATSAPP_TECNICO = 'https://wa.me/5562999257513?text=Ol%C3%A1!%20Tenho%20d
 
 export default function Storefront() {
 
-  const [catalog, setCatalog] = useState<CatalogProduct[]>([]);
+  const [catalog, setCatalog] = useState<CatalogProduct[]>(CATALOG);
   const [loadingCatalog, setLoadingCatalog] = useState(true);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function Storefront() {
   }, []);
   useEffect(() => {
     async function loadCatalog() {
-      const { data, error } = await supabase.from('products').select('*, variants(*)').order('name');
+      const { data, error } = await supabase.from('products').select('*, variants(*)').order('name'); if (!data || data.length === 0) { setCatalog(CATALOG); setLoadingCatalog(false); return; }
       if (error) {
         console.error('[loadCatalog] Supabase error:', error);
       }

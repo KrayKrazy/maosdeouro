@@ -9,7 +9,7 @@ import MotionButton from '@/components/ui/motion-button';
 const fmt = (v: number) =>
   v <= 0 ? 'Sob consulta' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-const WHATSAPP_TECNICO = 'https://wa.me/5511988888888?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20a%20instala%C3%A7%C3%A3o.';
+const WHATSAPP_TECNICO = 'https://wa.me/5562999257513?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20a%20instala%C3%A7%C3%A3o.';
 
 export default function Storefront() {
 
@@ -36,7 +36,7 @@ export default function Storefront() {
         const formatted = data.map(p => ({
           ...p,
           image: p.image_url,
-          from_price_per_m2: p.variants?.length > 0 ? Math.min(...p.variants.map((v: any) => v.price_per_m2)) : 0
+          from_price_per_m2: p.variants && p.variants.length > 0 ? Math.min(...p.variants.map((v: any) => v.price_per_m2)) : 0
         }));
         setCatalog(formatted as any);
       }

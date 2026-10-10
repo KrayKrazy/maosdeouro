@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { quoteM2, Variant, CatalogProduct, LINHAS, VIDROS, ALUMINIOS, ARREMATES, PUXADOR_TAMANHOS, PUXADOR_CORES, TAXA_INSTALACAO, TAXA_FORA_PADRAO, DESLOCAMENTO_KM_RATE } from '../data/products';
 import { supabase } from '@/lib/supabase';
+import MotionButton from '@/components/ui/motion-button';
 
 const fmt = (v: number) =>
   v <= 0 ? 'Sob consulta' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -427,9 +428,13 @@ export default function Storefront() {
               <p className="text-[#D4AF37] font-serif text-lg font-bold mt-2">
                 A partir de {fmt(p.from_price_per_m2)} <span className="text-xs font-sans font-normal text-gray-400">/m²</span>
               </p>
-              <button onClick={() => openProduct(p)} className="mt-3 w-full bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold uppercase tracking-wider text-sm py-3 rounded-lg hover:brightness-110 transition-all">
-                Configurar Medidas
-              </button>
+              <div className="mt-3 flex justify-center w-full">
+                <MotionButton 
+                  label="Configurar Medidas" 
+                  onClick={() => openProduct(p)} 
+                  classes="w-full max-w-full rounded-lg"
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -581,12 +586,13 @@ export default function Storefront() {
                       </p>
                     </div>
 
-                    <button 
-                      onClick={proceedToLead} 
-                      className="w-full bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold border-none uppercase tracking-widest font-bold text-sm py-4 rounded hover:bg-gold hover:text-white transition-all"
-                    >
-                      Continuar Compra
-                    </button>
+                    <div className="flex justify-center w-full">
+                      <MotionButton 
+                        label="Continuar Compra" 
+                        onClick={proceedToLead} 
+                        classes="w-full max-w-full rounded"
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -716,12 +722,16 @@ export default function Storefront() {
                     )}
 
                     {selectedQuote && (
-                      <button onClick={() => {
-                        if (address.street && !address.number) return alert('Por favor, informe o número da residência.');
-                        setCheckoutStep('PAYMENT');
-                      }} className="w-full bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold border-none uppercase tracking-widest font-bold text-sm py-4 rounded-lg hover:bg-gold hover:text-white hover:-translate-y-1 hover:shadow-xl transition-all duration-300 mt-6 flex items-center justify-center gap-2">
-                        Confirmar Frete e Endereço →
-                      </button>
+                      <div className="mt-6 flex justify-center w-full">
+                        <MotionButton 
+                          label="Confirmar Frete e Endereço" 
+                          onClick={() => {
+                            if (address.street && !address.number) return alert('Por favor, informe o número da residência.');
+                            setCheckoutStep('PAYMENT');
+                          }}
+                          classes="w-full max-w-full rounded-lg"
+                        />
+                      </div>
                     )}
                   </div>
                 )}
@@ -800,9 +810,14 @@ export default function Storefront() {
                       </div>
                     )}
                     
-                    <button onClick={submitPayment} disabled={loading} className="w-full bg-[#00B25A] text-white uppercase tracking-widest font-bold text-sm py-4 rounded hover:bg-[#00924A] transition-all">
-                      {loading ? 'Processando...' : paymentMethod === 'pix' ? 'Gerar PIX' : 'Pagar com Cartão'}
-                    </button>
+                    <div className="mt-6 flex justify-center w-full">
+                      <MotionButton 
+                        label={loading ? 'Processando...' : paymentMethod === 'pix' ? 'Gerar PIX' : 'Pagar com Cartão'} 
+                        onClick={submitPayment} 
+                        disabled={loading}
+                        classes="w-full max-w-full rounded-lg"
+                      />
+                    </div>
                     <div className="text-center text-xs text-gray-500 mt-3">🔒 100% Seguro via Cakto Pay</div>
                   </div>
                 )}

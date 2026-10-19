@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
-import { sendOrderNotifications } from '../../send-os/route';
+import { sendOrderNotifications } from '@/lib/notifications';
 
 export async function POST(req: Request) {
   try {

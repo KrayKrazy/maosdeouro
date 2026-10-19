@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOrderNotifications } from '../send-os/route';
+import { sendOrderNotifications } from '@/lib/notifications';
 
 // Helper para gerar QR Code PIX EMV (BRCode estático/dinâmico de contingência) caso o gateway ainda esteja sendo homologado pela cliente
 function buildPixContingencyEmv(amount: number, txId: string): string {
